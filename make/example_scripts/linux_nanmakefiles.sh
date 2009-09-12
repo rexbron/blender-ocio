@@ -20,14 +20,12 @@ export NAN_SDL=/usr/local
 export NAN_ODE=/usr/local
 export NAN_ZLIB=/usr/local
 export NAN_FREETYPE=/usr/local
-export NAN_FTGL=/usr/local
-# CPPFLAGS +=-DMOZ_NOT_NET
+
 export NAN_MOZILLA_INC=/usr/local/include/mozilla-1.0.1/
 export NAN_MOZILLA_LIB=/usr/local/lib/mozilla-1.0.1/
 #export NAN_NSPR=/scratch/irulan/mein/nspr-4.2.2/mozilla/nsprpub/dist/
 export CPPFLAGS="$CPPFLAGS"
 export CFLAGS="$CFLAGS"
-export WITH_FREETYPE2=true
 export INTERNATIONAL=true
 
 $HMAKE -C intern/

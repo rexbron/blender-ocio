@@ -9,7 +9,7 @@
 #
 
 #
-# Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 The SCons Foundation
+# Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -33,7 +33,7 @@
 
 from __future__ import nested_scopes
 
-__revision__ = "src/script/scons-time.py 3603 2008/10/10 05:46:45 scons"
+__revision__ = "src/script/scons-time.py 4043 2009/02/23 09:06:45 scons"
 
 import getopt
 import glob
@@ -166,13 +166,13 @@ class Gnuplotter(Plotter):
         result = []
         for line in self.lines:
             result.extend(line.get_x_values())
-        return filter(None, result)
+        return filter(lambda r: not r is None, result)
 
     def get_all_y_values(self):
         result = []
         for line in self.lines:
             result.extend(line.get_y_values())
-        return filter(None, result)
+        return filter(lambda r: not r is None, result)
 
     def get_min_x(self):
         try:
@@ -1511,3 +1511,9 @@ if __name__ == '__main__':
         sys.exit(1)
 
     ST.execute_subcommand(args)
+
+# Local Variables:
+# tab-width:4
+# indent-tabs-mode:nil
+# End:
+# vim: set expandtab tabstop=4 shiftwidth=4:

@@ -32,38 +32,13 @@ mesa:    http://www.mesa3d.org
 If you want to compile with QuickTime enabled, download the SDK for your OS:
 quicktime:   http://developer.apple.com/quicktime/
 
-For the translations to other languages than English you will need gettext,
-freetype2 and FTGL. Note that these translations are not complete yet, some
-time after the release of 2.27 they will be made available for download also.
+For the translations to other languages than English you will need gettext.
+Note that these translations are not complete yet, some time after the
+release of 2.27 they will be made available for download also.
 We welcome feedback about the translated user interface, and even contributions
 to the translation effort :)
 
 gettext:     http://www.gnu.org/software/gettext/
-freetype2:   http://www.freetype.org/
-FTGL:        http://homepages.paradise.net.nz/henryj/code/#FTGL
-
-FTGL needs a small patch to get glyphs with the right colour in the cache
---- FTGL/src/FTPixmapGlyph.cpp.orig	2003-05-10 16:07:45.000000000 +0200
-+++ FTGL/src/FTPixmapGlyph.cpp	2003-05-10 16:09:19.000000000 +0200
-@@ -33,3 +33,3 @@
-         // Get the current glColor.
-         float ftglColour[4];
--        glGetFloatv( GL_CURRENT_COLOR, ftglColour);
-+        ftglColour[0] = ftglColour[1] = ftglColour[2] = ftglColour[3] = 1.0;
-
-
-You may also need to modify the typedef for GLUTesselatorFunction in 
-src/FTVectoriser.cpp if you are on an undefined system.  To do that
-check the following link to find out various platform identifiers:
-http://www.blender3d.org/cms/Names.146.0.html#299
-
-_____________________________
-      ADDED FTGL NOTE:
-_____________________________
-
-ftgl now has been patched so much, that it's included in SVN/lib/
-The sources for the patched ftgl will be made available soon...
-
 
 
 
@@ -360,12 +335,6 @@ dont move these libs from their install location or you will break other libs (l
 * build the unix version, not the mac one
 * use ./configure then make and make install
 * the SVN version of freetype-config has the path on my computer, adjust it to yours if you want to rebuild fgtl
-
-FGTL
-* freetype must be already installed and working
-* build the unix version, not the mac one
-* set FT2_CONFIG var to the full path of freetype-config
-* configure with the following options --without-x  --with-ft-prefix=PFX --with-ft-exec-prefix=PFX where PFX is the valid path
 
 
 ----------------------NetBSD TIPS--------------------------------------

@@ -132,6 +132,6 @@ xvidcore_env['ASFLAGS'] = asflags
 xvidcore_env.BlenderLib (libname="extern_xvidcore", sources=Split(sources),
                          includes=["."],
                          defines=Split(defs),
-                         libtype=['core', 'intern', 'player'],
-                         priority = [10, 10, 300],
+                         libtype=['core', 'intern'],
+                         priority = [10, 10],
                          compileflags = Split(cflags))

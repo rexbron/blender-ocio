@@ -147,6 +147,6 @@ x264_env['ASFLAGS'] = asflags
 x264_env.BlenderLib (libname="extern_x264", sources=sources,
                      includes=["."],
                      defines=Split(defs),
-                     libtype=['core', 'intern', 'player'],
-                     priority = [10, 10, 300],
+                     libtype=['core', 'intern'],
+                     priority = [10, 10],
                      compileflags = Split(cflags))

@@ -11,7 +11,7 @@ if env['OURPLATFORM'] == 'win32-mingw':
 else:
     ffmpeg_switches = "--disable-shared --enable-gpl --enable-zlib --disable-vhook --disable-ffserver --disable-ffplay --enable-swscale --enable-memalign-hack --enable-libx264 --enable-libxvid --enable-libmp3lame --disable-bzlib --disable-outdevs --disable-demuxer=alsa"
     if env['OURPLATFORM'] == 'darwin':
-        ffmpeg_switches += " --disable-mmx"
+        ffmpeg_switches += " --disable-mmx --disable-bzlib"
 
 if env['WITH_BF_OGG']:
     ffmpeg_switches += " --enable-libtheora --enable-libvorbis"
@@ -148,7 +148,7 @@ for lib in all_libs:
                 break
         sources.append(s)
         
-    if env['OURPLATFORM'] in ['win32-mingw', 'win32-vc' , 'darwin'] :
+    if env['OURPLATFORM'] in ['win32-mingw', 'win32-vc', 'win64-vc' , 'darwin'] :
     	defs = "HAVE_AV_CONFIG_H  _ISOC9X_SOURCE"
     else :
     	defs = "HAVE_AV_CONFIG_H _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _ISOC9X_SOURCE"
@@ -182,6 +182,6 @@ for lib in all_libs:
     ff_env.BlenderLib (libname="extern_" + lib, sources=sources,
                     includes=["."] + all_libs + extra_includes,
                     defines=Split(defs),
-                    libtype=['core', 'intern', 'player'],
-                    priority = [5, 5, 200],
+                    libtype=['core', 'intern'],
+                    priority = [5, 5],
                     compileflags = Split(cflags))

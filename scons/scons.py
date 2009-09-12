@@ -2,7 +2,7 @@
 #
 # SCons - a Software Constructor
 #
-# Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 The SCons Foundation
+# Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -24,15 +24,15 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "src/script/scons.py 3603 2008/10/10 05:46:45 scons"
+__revision__ = "src/script/scons.py 4043 2009/02/23 09:06:45 scons"
 
-__version__ = "1.1.0"
+__version__ = "1.2.0.d20090223"
 
-__build__ = "r3603"
+__build__ = "r4043"
 
 __buildsys__ = "scons-dev"
 
-__date__ = "2008/10/10 05:46:45"
+__date__ = "2009/02/23 09:06:45"
 
 __developer__ = "scons"
 
@@ -160,4 +160,12 @@ sys.path = libs + sys.path
 
 if __name__ == "__main__":
     import SCons.Script
+    # this does all the work, and calls sys.exit
+    # with the proper exit status when done.
     SCons.Script.main()
+
+# Local Variables:
+# tab-width:4
+# indent-tabs-mode:nil
+# End:
+# vim: set expandtab tabstop=4 shiftwidth=4:

@@ -146,5 +146,18 @@ typedef struct Scopes {
 #define SCOPES_WAVEFRM_YCC_JPEG	4
 
 
+typedef struct ColorSpace {
+	struct ColorSpace *next, *prev;
+	int index;
+	char name[32];
+	char family[32];
+	int pad;
+} ColorSpace;
+
+typedef struct DisplayColorSpace {
+	struct ColorSpace colorspace;
+	char display_view_name[64];
+} DisplayColorSpace;
+
 #endif
 

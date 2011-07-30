@@ -1,0 +1,22 @@
+Integration of OpenColorIO and improvement of the Blender color management pipeline.
+
+Compile using CMake (should work for all platforms).
+
+Only ground work for now.
+
+Satus:
+-Added OCIO to the source and build system (extern/ocio)
+-Added a C API to OCIO (complete enough for using profiles, colorspaces, displays, views and processors but not for editing them)
+-Added BKE_colormanagement.h and colormanagement.c to bf_blenkernel there are the functions to initialise/exit the colormanagement system, apply a transformation to an image, get available colorspace/displays (RNA helpers)
+-Added a "display_colorspace" property to each screen (DNA and RNA) and draw it from python ui (in the info header) as a test for the API but the selected colorspace is not used by the viewwrs/colopicker of this screen yet.
+-Added a small hook up un divers.c that use the new code to convert sRGB 8bit image to linear float
+
+Todo:
+-Check colorspaces used by a file when opening it and try to match them to the current system colorspaces. When no match is found: warns the user and set a "sane" default where it is in use.
+-Integrate into the Blender colormanagement pipeline.
+-Add colorspaces properties to image sequence movies input/output for selecting/forcing the colorspace.
+-Add a string properties "Blender.Op3nColorIO.Colorspace=colorspacename" into imagesfiles when saving them and use this to autodetect the colorspace of a file (also use internal flag when availaible but the string takes prioprity)
+
+Contributions are welcome
+
+Xavier

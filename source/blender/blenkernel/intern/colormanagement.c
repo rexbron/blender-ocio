@@ -2,10 +2,12 @@
 #include <string.h>
 
 #include "BKE_colormanagement.h"
+#include "BKE_utildefines.h"
 
 #include "MEM_guardedalloc.h"
 
 #include "BLI_blenlib.h"
+#include "BLI_path_util.h"
 
 #include "BKE_global.h"
 #include "BKE_main.h"
@@ -19,7 +21,8 @@
 
 void cmInit(void)
 {
-	
+	const char* configdir;
+	char configfile[FILE_MAXDIR+FILE_MAXFILE];
 	const char* name;
 	const char* family;
 	const char* displayname;
@@ -28,14 +31,25 @@ void cmInit(void)
 	ConstConfigRcPtr* config;
 	ConstColorSpaceRcPtr* ociocs;
 	
-	config = OCIO_configCreateFromFile(BKE_COLORMANAGEMENT_PROFILE_PATH);
-	OCIO_setCurrentConfig(config);
-	
 	G.main->colorspaces.first = NULL;
 	G.main->colorspaces.last = NULL;
 	
 	G.main->display_colorspaces.first = NULL;
 	G.main->display_colorspaces.last = NULL;
+	
+	configdir = BLI_get_folder(BLENDER_DATAFILES, "colormanagement");
+	
+	if(configdir)
+	{
+		BLI_join_dirfile(configfile, sizeof(configfile), configdir, BKE_COLORMANAGEMENT_PROFILE);
+	}
+	
+	config = OCIO_configCreateFromFile(configfile);
+	
+	if(!config)
+		return;
+	
+	OCIO_setCurrentConfig(config);
 	
 	//colorspaces
 	nrColorSpaces = OCIO_configGetNumColorSpaces(config);

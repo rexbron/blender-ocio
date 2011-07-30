@@ -364,6 +364,13 @@ if(UNIX AND NOT APPLE)
 		)
 	endif()
 
+	if(WITH_OCIO)
+		install(
+			DIRECTORY ${CMAKE_SOURCE_DIR}/release/colormanagement
+			DESTINATION ${TARGETDIR_VER}/datafiles
+		)
+	endif()
+		
 		# plugins in blender 2.5 don't work at the moment.
 		#
 		# install(

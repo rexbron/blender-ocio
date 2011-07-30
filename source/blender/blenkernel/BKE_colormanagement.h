@@ -2,7 +2,7 @@
 #ifndef BKE_COLORMANAGEMENT_H
 #define BKE_COLORMANAGEMENT_H
 
-#define BKE_COLORMANAGEMENT_PROFILE_PATH "/home/xavier/BlenderOCIOProfile/config.ocio"
+#define BKE_COLORMANAGEMENT_PROFILE "config.ocio"
 
 #include "DNA_color_types.h"
 //#include "RNA_types.h"

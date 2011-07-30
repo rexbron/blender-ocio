@@ -45,6 +45,7 @@
 #include "IMB_allocimbuf.h"
 
 #include "BKE_colortools.h"
+#include "BKE_colormanagement.h"
 
 #include "MEM_guardedalloc.h"
 
@@ -374,7 +375,9 @@ void IMB_float_from_rect(struct ImBuf *ibuf)
 	if (ibuf->profile != IB_PROFILE_NONE) {
 		/* if the image has been given a profile then we're working 
 		 * with color management in mind, so convert it to linear space */
-		imb_float_from_rect_linear(ibuf, ibuf->rect_float);
+//		imb_float_from_rect_linear(ibuf, ibuf->rect_float);
+		imb_float_from_rect_nonlinear(ibuf, ibuf->rect_float);
+		cmApplyTransform(ibuf->rect_float, ibuf->x, ibuf->y, 4, "color_picking", "scene_linear");
 	} else {
 		imb_float_from_rect_nonlinear(ibuf, ibuf->rect_float);
 	}

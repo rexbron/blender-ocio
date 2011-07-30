@@ -27,6 +27,10 @@
 # Otherwise we get warnings here that we cant fix in external projects
 remove_strict_flags()
 
+if(WITH_OCIO)
+	add_subdirectory(ocio)
+endif()
+
 if(WITH_BULLET)
 	add_subdirectory(bullet2)
 endif()

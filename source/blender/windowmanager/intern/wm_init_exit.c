@@ -106,6 +106,7 @@
 
 #include "BKE_depsgraph.h"
 #include "BKE_sound.h"
+#include "BKE_colormanagement.h"
 
 static void wm_init_reports(bContext *C)
 {
@@ -187,6 +188,10 @@ void WM_init(bContext *C, int argc, const char **argv)
 	
 	WM_read_history();
 
+	// init color management
+	// after WM_read_home_file because startup file erase profiles in G.main
+	cmInit();
+	
 	/* allow a path of "", this is what happens when making a new file */
 	/*
 	if(G.main->name[0] == 0)
@@ -346,7 +351,8 @@ void WM_exit(bContext *C)
 	wmWindow *win;
 
 	sound_exit();
-
+	
+	cmExit();
 
 	/* first wrap up running stuff, we assume only the active WM is running */
 	/* modal handlers are on window level freed, others too? */

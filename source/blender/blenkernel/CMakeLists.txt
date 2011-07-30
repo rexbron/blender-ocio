@@ -87,6 +87,7 @@ set(SRC
 	intern/cloth.c
 	intern/collision.c
 	intern/colortools.c
+	intern/colormanagement.c
 	intern/constraint.c
 	intern/context.c
 	intern/curve.c
@@ -170,6 +171,7 @@ set(SRC
 	BKE_cloth.h
 	BKE_collision.h
 	BKE_colortools.h
+	BKE_colormanagement.h
 	BKE_constraint.h
 	BKE_context.h
 	BKE_curve.h
@@ -237,6 +239,13 @@ set(SRC
 )
 
 add_definitions(-DGLEW_STATIC)
+
+if(WITH_OCIO)
+	list(APPEND INC
+		../../../extern/ocio
+	)
+	add_definitions(-DWITH_OCIO)
+endif()
 
 if(WITH_AUDASPACE)
 	list(APPEND INC

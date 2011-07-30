@@ -29,6 +29,7 @@ class INFO_HT_header(bpy.types.Header):
         window = context.window
         scene = context.scene
         rd = scene.render
+        screen = context.screen
 
         row = layout.row(align=True)
         row.template_header()
@@ -54,6 +55,8 @@ class INFO_HT_header(bpy.types.Header):
 
         if rd.has_multiple_engines:
             layout.prop(rd, "engine", text="")
+
+        layout.prop(screen, "display_colorspace", text="")
 
         layout.separator()
 

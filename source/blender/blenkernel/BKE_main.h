@@ -86,7 +86,9 @@ typedef struct Main {
 	ListBase particle;
 	ListBase wm;
 	ListBase gpencil;
-
+	ListBase colorspaces;
+	ListBase display_colorspaces;
+	
 	char id_tag_update[256];
 } Main;
 

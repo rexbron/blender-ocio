@@ -376,6 +376,12 @@ EnumPropertyItem wm_report_items[] = {
 		{RPT_ERROR_OUT_OF_MEMORY, "ERROR_OUT_OF_MEMORY", 0, "Out of Memory", ""},
 		{0, NULL, 0, NULL, NULL}};
 
+
+EnumPropertyItem colormanaged_display_items[] = {
+	{0, "DEFAULT", 0, "Default", ""},
+	{0, NULL, 0, NULL, NULL}
+};
+
 #define KMI_TYPE_KEYBOARD	0
 #define KMI_TYPE_MOUSE		1
 #define KMI_TYPE_TWEAK		2
@@ -390,6 +396,7 @@ EnumPropertyItem wm_report_items[] = {
 #include "WM_api.h"
 
 #include "BKE_idprop.h"
+#include "BKE_colormanagement.h"
 
 #include "MEM_guardedalloc.h"
 
@@ -491,6 +498,31 @@ static void rna_Window_screen_update(bContext *C, PointerRNA *ptr)
 		WM_event_add_notifier(C, NC_SCREEN|ND_SCREENBROWSE, win->newscreen);
 		win->newscreen= NULL;
 	}
+}
+
+static int rna_Window_display_getf(struct PointerRNA *ptr)
+{
+	wmWindow *w= (wmWindow*)ptr->data;
+	ColorManagedDisplay* cd = cmGetDisplay(w->colormanaged_display);
+	if(cd)
+		return cd->index;
+	//cd = cmGetDefaultDisplay();
+	//if(cd)
+	//	return cd->index;
+	return 0;
+}
+
+static void rna_Window_display_setf(struct PointerRNA *ptr, int value)
+{
+	wmWindow *w= (wmWindow*)ptr->data;
+	ColorManagedDisplay* cd = cmGetDisplayFromIndex(value);
+	if(cd)
+		BLI_strncpy(w->colormanaged_display, cd->display_name, 32);
+}
+
+static EnumPropertyItem* rna_Window_display_itemf(bContext *C, PointerRNA *ptr, PropertyRNA *UNUSED(prop), int *free)
+{
+	return cmGetDisplays();
 }
 
 static PointerRNA rna_KeyMapItem_properties_get(PointerRNA *ptr)
@@ -1462,6 +1494,13 @@ static void rna_def_window(BlenderRNA *brna)
 	RNA_def_property_pointer_funcs(prop, NULL, "rna_Window_screen_set", NULL, NULL);
 	RNA_def_property_flag(prop, PROP_CONTEXT_UPDATE);
 	RNA_def_property_update(prop, 0, "rna_Window_screen_update");
+	
+	/* Color Management Display */
+	prop= RNA_def_property(srna, "colormanaged_display", PROP_ENUM, PROP_NONE);
+	RNA_def_property_enum_items(prop, colormanaged_display_items);
+	RNA_def_property_enum_funcs(prop, "rna_Window_display_getf", "rna_Window_display_setf", "rna_Window_display_itemf");
+	RNA_def_property_ui_text(prop, "ColorManaged Display", "Colormanaged display used for this window.");
+	//RNA_def_property_update(prop, NC_SPACE, "rna_Screen_redraw_update");
 }
 
 /* curve.splines */

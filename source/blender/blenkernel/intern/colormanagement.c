@@ -1,41 +1,41 @@
 
+#include "BKE_colormanagement.h"
+
 #include <string.h>
 
-#include "BKE_colormanagement.h"
-#include "BKE_utildefines.h"
+#include "DNA_windowmanager_types.h"
 
 #include "MEM_guardedalloc.h"
 
 #include "BLI_blenlib.h"
 #include "BLI_path_util.h"
 
+#include "BKE_utildefines.h"
 #include "BKE_global.h"
 #include "BKE_main.h"
+#include "BKE_context.h"
 
 #include "RNA_define.h"
 
-#include "UI_resources.h"
+//#include "UI_resources.h"
 
 #ifdef WITH_OCIO
 #include "ocio-capi.h"
 
-void cmInit(void)
+void cmInit(bContext *C)
 {
 	const char* configdir;
 	char configfile[FILE_MAXDIR+FILE_MAXFILE];
 	const char* name;
 	const char* family;
-	const char* displayname;
-	const char* viewname;
-	int nrColorSpaces, nrDisplays, nrViews, index, viewindex;
+	int nrColorSpaces, nrDisplays, nrViews, index, viewindex, viewindex2;
 	ConstConfigRcPtr* config;
-	ConstColorSpaceRcPtr* ociocs;
 	
 	G.main->colorspaces.first = NULL;
 	G.main->colorspaces.last = NULL;
 	
-	G.main->display_colorspaces.first = NULL;
-	G.main->display_colorspaces.last = NULL;
+	G.main->color_managed_displays.first = NULL;
+	G.main->color_managed_displays.last = NULL;
 	
 	configdir = BLI_get_folder(BLENDER_DATAFILES, "colormanagement");
 	
@@ -46,69 +46,119 @@ void cmInit(void)
 	
 	config = OCIO_configCreateFromFile(configfile);
 	
-	if(!config)
-		return;
-	
-	OCIO_setCurrentConfig(config);
-	
-	//colorspaces
-	nrColorSpaces = OCIO_configGetNumColorSpaces(config);
-	for (index = 0 ; index < nrColorSpaces; index ++)
+	if(config)
 	{
-		ColorSpace* colorSpace;
 		
-		name = OCIO_configGetColorSpaceNameByIndex(config, index);
-		ociocs = OCIO_configGetColorSpace(config, name);
-		family = OCIO_colorSpaceGetFamily(ociocs);
+		OCIO_setCurrentConfig(config);
 		
-		colorSpace = MEM_mallocN(sizeof(ColorSpace), "ColorSpace");
-		colorSpace->index = index;
-		
-		BLI_strncpy(colorSpace->name, name, 32);
-		BLI_strncpy(colorSpace->family, family, 32);
-		
-		BLI_addtail(&G.main->colorspaces, colorSpace);
-		
-		OCIO_colorSpaceRelease(ociocs);
-	}
-	
-	//displays
-	nrDisplays = OCIO_configGetNumDisplays(config);
-	for (index = 0 ; index < nrDisplays; index ++)
-	{
-		DisplayColorSpace* colorSpace;
-		displayname = OCIO_configGetDisplay(config, index);
-			
-		nrViews = OCIO_configGetNumViews(config, displayname);
-		
-		for (viewindex = 0 ; viewindex < nrViews; viewindex ++)
+		// load colorspaces
+		nrColorSpaces = OCIO_configGetNumColorSpaces(config);
+		for (index = 0 ; index < nrColorSpaces; index ++)
 		{
-			viewname = OCIO_configGetView(config, displayname, viewindex);
-			name = OCIO_configGetDisplayColorSpaceName(config, displayname, viewname);
+			ColorSpace* colorSpace;
+			ConstColorSpaceRcPtr* ociocs;
+			
+			name = OCIO_configGetColorSpaceNameByIndex(config, index);
 			ociocs = OCIO_configGetColorSpace(config, name);
 			family = OCIO_colorSpaceGetFamily(ociocs);
 			
-			colorSpace = MEM_mallocN(sizeof(DisplayColorSpace), "ColorSpace");
-			colorSpace->colorspace.index = OCIO_configGetIndexForColorSpace(config, name);
+			colorSpace = MEM_mallocN(sizeof(ColorSpace), "ColorSpace");
+			colorSpace->index = index;
 			
-			BLI_strncpy(colorSpace->colorspace.name, name, 32);
-			BLI_strncpy(colorSpace->colorspace.family, family, 32);
+			BLI_strncpy(colorSpace->name, name, 32);
+			BLI_strncpy(colorSpace->family, family, 32);
 			
-			BLI_snprintf(colorSpace->display_view_name, 64, "%s.%s", displayname, viewname);
-			BLI_addtail(&G.main->display_colorspaces, colorSpace);
+			BLI_addtail(&G.main->colorspaces, colorSpace);
 			
 			OCIO_colorSpaceRelease(ociocs);
 		}
+		
+		// load displays
+		viewindex2 = 0;
+		nrDisplays = OCIO_configGetNumDisplays(config);
+		for (index = 0 ; index < nrDisplays; index ++)
+		{
+			const char* displayname;
+			ColorManagedDisplay* display;
+			
+			display = MEM_mallocN(sizeof(ColorManagedDisplay), "ColorManagedDisplay");
+			displayname = OCIO_configGetDisplay(config, index);
+			
+			display->views.first = NULL;
+			display->views.last = NULL;
+			
+			display->index = index;
+			BLI_strncpy(display->display_name, displayname, 32);
+			BLI_addtail(&G.main->color_managed_displays, display);
+			
+			
+			// load views
+			nrViews = OCIO_configGetNumViews(config, displayname);
+			for (viewindex = 0 ; viewindex < nrViews; viewindex ++)
+			{
+				const char* viewname;
+				ColorManagedView* view;
+				
+				viewname = OCIO_configGetView(config, displayname, viewindex);
+				name = OCIO_configGetDisplayColorSpaceName(config, displayname, viewname);
+				
+				view = MEM_mallocN(sizeof(ColorManagedView), "ColorManagedView");
+				//view->index = viewindex;
+				view->index = viewindex2++;
+				view->parent_display_index = index;
+				BLI_strncpy(view->view_name, viewname, 32);
+				BLI_strncpy(view->colorspace_name, name, 32);
+				
+				BLI_addtail(&display->views, view);
+			}
+		}
+		OCIO_configRelease(config);
+		
+		//fix windows with bad display
+		{
+			wmWindowManager* wm = CTX_wm_manager(C);
+			wmWindow* w = wm->windows.first;
+			
+			while(w)
+			{
+				ColorManagedDisplay* display = cmGetDisplay(w->colormanaged_display);
+				if(!display)
+				{
+					display = cmGetDefaultDisplay();
+					printf("Blender color management: Window display \"%s\" not found, setting default \"%s\".", w->colormanaged_display, display->display_name);
+					BLI_strncpy(w->colormanaged_display, display->display_name, 32);
+				}
+				w = w->next;
+			}
+		}
+		
+		
+		//fix space image with bad viewer
+		{
+			//todo
+		}
+		
+		//fix images input/output with bad colorspaces
+		{
+			//todo
+		}
 	}
-	
-	OCIO_configRelease(config);
 }
 
 void cmExit(void)
 {
 	ColorSpace* cs;
-	DisplayColorSpace* dcs;
+	ColorManagedDisplay* cd;
 	EnumPropertyItem* items;
+	
+	items = cmGetColorSpaces();
+	MEM_freeN(items);
+	
+	items = cmGetDisplays();
+	MEM_freeN(items);
+	
+	items = cmGetViews(0);
+	MEM_freeN(items);
 	
 	cs = G.main->colorspaces.first;
 	while(cs)
@@ -118,23 +168,25 @@ void cmExit(void)
 		MEM_freeN(cs2);
 	}
 	
-	dcs = G.main->display_colorspaces.first;
-	while(dcs)
+	cd = G.main->color_managed_displays.first;
+	while(cd)
 	{
-		DisplayColorSpace* dcs2 = dcs;
-		dcs = (DisplayColorSpace*) dcs->colorspace.next;
-		MEM_freeN(dcs2);
+		ColorManagedDisplay* cd2 = cd;
+		ColorManagedView* cv = cd->views.first;
+		while(cv)
+		{
+			ColorManagedView* cv2 = cv;
+			cv = cv->next;
+			MEM_freeN(cv2);
+		}
+		
+		cd = cd->next;
+		MEM_freeN(cd2);
 	}
-	
-	items = cmGetColorSpaces();
-	MEM_freeN(items);
-	
-	items = cmGetDisplayColorSpaces();
-	MEM_freeN(items);
 }
 
 
-ColorSpace* cmGetColorSpaceFromName(const char* name)
+ColorSpace* cmGetColorSpace(const char* name)
 {
 	ColorSpace* cs = G.main->colorspaces.first;
 	while(cs)
@@ -158,39 +210,74 @@ ColorSpace* cmGetColorSpaceFromIndex(int index)
 	return 0;
 }
 
-DisplayColorSpace* cmGetDisplayColorSpaceFromName(const char* name)
+ColorManagedDisplay* cmGetDisplay(const char* name)
 {
-	DisplayColorSpace* cs = G.main->display_colorspaces.first;
-	while(cs)
+	ColorManagedDisplay* cd = G.main->color_managed_displays.first;
+	while(cd)
 	{
-		if( strcmp(cs->display_view_name, name) == 0 )
-			return cs;
-		cs = (DisplayColorSpace*) cs->colorspace.next;
+		if( strcmp(cd->display_name, name) == 0 )
+			return cd;
+		cd = cd->next;
 	}
 	return 0;
 }
 
-DisplayColorSpace* cmGetDisplayColorSpaceFromIndex(int index)
+ColorManagedDisplay* cmGetDisplayFromIndex(int index)
 {
-	DisplayColorSpace* cs = G.main->display_colorspaces.first;
-	while(cs)
+	ColorManagedDisplay* cd = G.main->color_managed_displays.first;
+	while(cd)
 	{
-		if( cs->colorspace.index == index )
-			return cs;
-		cs = (DisplayColorSpace*) cs->colorspace.next;
+		if( cd->index == index )
+			return cd;
+		cd = cd->next;
 	}
 	return 0;
 }
 
-DisplayColorSpace* cmGetDefaultDisplayColorSpace(void)
+ColorManagedDisplay* cmGetDefaultDisplay(void)
 {
-	char display_view[64];
 	ConstConfigRcPtr* config = OCIO_getCurrentConfig();
 	const char* display = OCIO_configGetDefaultDisplay(config);
-	const char* view = OCIO_configGetDefaultView(config, display);
-	BLI_snprintf(display_view, 64, "%s.%s", display, view);
 	OCIO_configRelease(config);
-	return cmGetDisplayColorSpaceFromName(display_view);
+	return cmGetDisplay(display);
+}
+
+ColorManagedView* cmGetView(ColorManagedDisplay* display, const char* name)
+{
+	if(display)
+	{
+		ColorManagedView* cv = display->views.first;
+		while(cv)
+		{
+			if( strcmp(cv->view_name, name) == 0 )
+				return cv;
+			cv = cv->next;
+		}
+	}
+	return 0;
+}
+
+ColorManagedView* cmGetViewFromName(const char* display, const char* name)
+{
+	ColorManagedDisplay* cd = cmGetDisplay(display);
+	return cmGetView(cd, name);
+}
+
+ColorManagedView* cmGetViewFromIndex(int index)
+{
+	ColorManagedDisplay* cd = G.main->color_managed_displays.first;
+	while(cd)
+	{
+		ColorManagedView* cv = cd->views.first;
+		while(cv)
+		{
+			if( cv->index == index )
+				return cv;
+			cv = cv->next;
+		}
+		cd = cd->next;
+	}
+	return 0;
 }
 
 void cmApplyTransform(float* data, long w, long h, long channels, const char* src, const char* dst)
@@ -205,13 +292,16 @@ void cmApplyTransform(float* data, long w, long h, long channels, const char* sr
 }
 
 
+
+// RNA helpers
+//***********************************
 EnumPropertyItem* cmGetColorSpaces(void)
 {
 	static EnumPropertyItem *items = 0;
-	static int totitem = 0;
 	
 	if(items == 0)
 	{
+		int totitem = 0;
 		ColorSpace* cs = G.main->colorspaces.first;
 		while(cs)
 		{
@@ -220,7 +310,7 @@ EnumPropertyItem* cmGetColorSpaces(void)
 			item.value = cs->index;
 			item.name = cs->name;
 			item.identifier = cs->name;
-			item.icon = ICON_COLOR;
+			item.icon = 0; //ICON_COLOR;
 			item.description = "";
 			
 			RNA_enum_item_add(&items, &totitem, &item);
@@ -234,33 +324,75 @@ EnumPropertyItem* cmGetColorSpaces(void)
 	return items;
 }
 
-EnumPropertyItem* cmGetDisplayColorSpaces(void)
+EnumPropertyItem* cmGetDisplays(void)
 {
 	static EnumPropertyItem *items = 0;
-	static int totitem = 0;
 	
 	if(items == 0)
 	{
-		DisplayColorSpace* cs = G.main->display_colorspaces.first;
-		while(cs)
+		int totitem = 0;
+		ColorManagedDisplay* cd = G.main->color_managed_displays.first;
+		while(cd)
 		{
 			EnumPropertyItem item;
 			
-			item.value = cs->colorspace.index;
-			item.name = cs->display_view_name;
-			item.identifier = cs->colorspace.name;
-			item.icon = ICON_COLOR;
+			item.value = cd->index;
+			item.name = cd->display_name;
+			item.identifier = cd->display_name;
+			item.icon = 0; //ICON_COLOR;
 			item.description = "";
 			
 			RNA_enum_item_add(&items, &totitem, &item);
 			
-			cs = (DisplayColorSpace*)cs->colorspace.next;
+			cd = cd->next;
 		}
 		
 		RNA_enum_item_end(&items, &totitem);
 	}
 	
 	return items;
+}
+
+EnumPropertyItem* cmGetViews(ColorManagedDisplay* display)
+{
+	static EnumPropertyItem *items = 0;
+	static int totitem = 0;
+	
+	if(items)
+	{
+		MEM_freeN(items);
+		items = 0;
+		totitem = 0;
+	}
+	
+	if(display)
+	{
+		ColorManagedView* cv = display->views.first;
+		while(cv)
+		{
+			EnumPropertyItem item;
+			
+			item.value = cv->index;
+			item.name = cv->view_name;
+			item.identifier = cv->view_name;
+			item.icon = 0; //ICON_COLOR;
+			item.description = "";
+			
+			RNA_enum_item_add(&items, &totitem, &item);
+			
+			cv = cv->next;
+		}
+	}
+	
+	RNA_enum_item_end(&items, &totitem);
+	
+	return items;
+}
+
+EnumPropertyItem* cmGetViewsFromDisplayName(const char* name)
+{
+	ColorManagedDisplay* display = cmGetDisplay(name);
+	return cmGetViews(display);
 }
 
 #endif //WITH_OCIO

@@ -87,7 +87,7 @@ typedef struct Main {
 	ListBase wm;
 	ListBase gpencil;
 	ListBase colorspaces;
-	ListBase display_colorspaces;
+	ListBase color_managed_displays;
 	
 	char id_tag_update[256];
 } Main;

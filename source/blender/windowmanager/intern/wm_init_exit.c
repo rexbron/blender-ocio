@@ -189,7 +189,7 @@ void WM_init(bContext *C, int argc, const char **argv)
 
 	// init color management
 	// after WM_read_home_file because startup file erase profiles in G.main
-	cmInit();
+	cmInit(C);
 	
 	/* allow a path of "", this is what happens when making a new file */
 	/*

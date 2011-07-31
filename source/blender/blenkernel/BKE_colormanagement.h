@@ -5,21 +5,30 @@
 #define BKE_COLORMANAGEMENT_PROFILE "config.ocio"
 
 #include "DNA_color_types.h"
-//#include "RNA_types.h"
 
-void cmInit(void);
+struct bContext;
+struct EnumPropertyItem;
+
+void cmInit(struct bContext* C);
 void cmExit(void);
 
-ColorSpace* cmGetColorSpaceFromName(const char* name);
+ColorSpace* cmGetColorSpace(const char* name);
 ColorSpace* cmGetColorSpaceFromIndex(int index);
-DisplayColorSpace* cmGetDisplayColorSpaceFromName(const char* name);
-DisplayColorSpace* cmGetDisplayColorSpaceFromIndex(int index);
-DisplayColorSpace* cmGetDefaultDisplayColorSpace(void);
+
+ColorManagedDisplay* cmGetDisplay(const char* name);
+ColorManagedDisplay* cmGetDisplayFromIndex(int index);
+ColorManagedDisplay* cmGetDefaultDisplay(void);
+
+ColorManagedView* cmGetView(ColorManagedDisplay* display, const char* name);
+ColorManagedView* cmGetViewFromName(const char* display, const char* name);
+ColorManagedView* cmGetViewFromIndex(int index);
+//ColorManagedView* cmGetDefaultView(ColorManagedDisplay* display);
 
 void cmApplyTransform(float* data, long w, long h, long channels, const char* src, const char* dst);
 
-struct EnumPropertyItem;
 struct EnumPropertyItem* cmGetColorSpaces(void);
-struct EnumPropertyItem* cmGetDisplayColorSpaces(void);
+struct EnumPropertyItem* cmGetDisplays(void);
+struct EnumPropertyItem* cmGetViews(ColorManagedDisplay* display);
+struct EnumPropertyItem* cmGetViewsFromDisplayName(const char* display);
 
 #endif // BKE_COLORMANAGEMENT_H

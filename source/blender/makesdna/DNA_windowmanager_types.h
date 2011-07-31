@@ -196,6 +196,8 @@ typedef struct wmWindow {
 	
 	ListBase subwindows;	/* opengl stuff for sub windows, see notes in wm_subwindow.c */
 	ListBase gesture;		/* gesture stuff */
+	
+	char colormanaged_display[32];
 } wmWindow;
 
 /* should be somthing like DNA_EXCLUDE 

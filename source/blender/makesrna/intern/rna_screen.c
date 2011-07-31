@@ -56,6 +56,7 @@ EnumPropertyItem region_type_items[] = {
 
 #ifdef RNA_RUNTIME
 
+
 static void rna_Screen_scene_set(PointerRNA *ptr, PointerRNA value)
 {
 	bScreen *sc= (bScreen*)ptr->data;

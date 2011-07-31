@@ -366,6 +366,8 @@ class IMAGE_HT_header(bpy.types.Header):
         if not show_render:
             layout.prop(sima, "use_image_pin", text="")
 
+        layout.prop(sima, "colormanaged_view", text="")
+
         # uv editing
         if show_uvedit:
             uvedit = sima.uv_editor

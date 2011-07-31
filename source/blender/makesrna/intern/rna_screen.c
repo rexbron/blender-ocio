@@ -49,19 +49,12 @@ EnumPropertyItem region_type_items[] = {
 	{RGN_TYPE_PREVIEW, "PREVIEW", 0, "Preview", ""},
 	{0, NULL, 0, NULL, NULL}};
 
-EnumPropertyItem dummy_rna_items[] = {
-	{0, "DEFAULT", 0, "Default", ""},
-	{0, NULL, 0, NULL, NULL}
-};
-
 #include "ED_screen.h"
 
 #include "WM_api.h"
 #include "WM_types.h"
 
 #ifdef RNA_RUNTIME
-
-#include "BKE_colormanagement.h"
 
 static void rna_Screen_scene_set(PointerRNA *ptr, PointerRNA value)
 {
@@ -104,31 +97,6 @@ static int rna_Screen_fullscreen_get(PointerRNA *ptr)
 {
 	bScreen *sc= (bScreen*)ptr->data;
 	return (sc->full != 0);
-}
-
-static int rna_Screen_colorspaces_getf(struct PointerRNA *ptr)
-{
-	bScreen *sc= (bScreen*)ptr->data;
-	DisplayColorSpace* dcs = cmGetDisplayColorSpaceFromName(sc->display_colorspace_name);
-	if(dcs)
-		return dcs->colorspace.index;
-	dcs = cmGetDefaultDisplayColorSpace();
-	if(dcs)
-		return dcs->colorspace.index;
-	return 0;
-}
-
-static void rna_Screen_colorspaces_setf(struct PointerRNA *ptr, int value)
-{
-	bScreen *sc= (bScreen*)ptr->data;
-	DisplayColorSpace* dcs = cmGetDisplayColorSpaceFromIndex(value);
-	if(dcs)
-		BLI_strncpy(sc->display_colorspace_name, dcs->display_view_name, 64);
-}
-
-static EnumPropertyItem* rna_Screen_colorspaces_itemf(bContext *C, PointerRNA *ptr, PropertyRNA *UNUSED(prop), int *free)
-{
-	return cmGetDisplayColorSpaces();
 }
 
 static void rna_Area_type_set(PointerRNA *ptr, int value)
@@ -317,13 +285,6 @@ static void rna_def_screen(BlenderRNA *brna)
 	RNA_def_property_boolean_sdna(prop, NULL, "redraws_flag", TIME_NODES);
 	RNA_def_property_ui_text(prop, "Node Editors", "");
 	RNA_def_property_update(prop, NC_SPACE|ND_SPACE_TIME, "rna_Screen_redraw_update");
-	
-	/* Display color space */
-	prop= RNA_def_property(srna, "display_colorspace", PROP_ENUM, PROP_NONE);
-	RNA_def_property_enum_items(prop, dummy_rna_items);
-	RNA_def_property_enum_funcs(prop, "rna_Screen_colorspaces_getf", "rna_Screen_colorspaces_setf", "rna_Screen_colorspaces_itemf");
-	RNA_def_property_ui_text(prop, "Display Colorspace", "Display colorspace used for this screen.");
-	//RNA_def_property_update(prop, NC_SPACE, "rna_Screen_redraw_update");
 }
 
 void RNA_def_screen(BlenderRNA *brna)

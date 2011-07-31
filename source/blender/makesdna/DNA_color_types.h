@@ -34,6 +34,7 @@
  */
 
 #include "DNA_vec_types.h"
+#include "DNA_listBase.h"
 
 /* general defines for kernel functions */
 #define CM_RESOL 32
@@ -154,10 +155,21 @@ typedef struct ColorSpace {
 	int pad;
 } ColorSpace;
 
-typedef struct DisplayColorSpace {
-	struct ColorSpace colorspace;
-	char display_view_name[64];
-} DisplayColorSpace;
+typedef struct ColorManagedDisplay {
+	struct ColorManagedDisplay *next, *prev;
+	int index;
+	char display_name[32];
+	int pad;
+	ListBase views;
+}ColorManagedDisplay;
+
+typedef struct ColorManagedView {
+	struct ColorManagedView *next, *prev;
+	int index;
+	char view_name[32];
+	char colorspace_name[32];
+	int parent_display_index;
+} ColorManagedView;
 
 #endif
 

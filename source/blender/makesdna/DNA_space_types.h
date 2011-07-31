@@ -274,6 +274,9 @@ typedef struct SpaceImage {
 	char sticky; /* sticky selection type */
 	char dt_uvstretch;
 	char around;
+	
+	char colormanaged_view[32];
+	char colormanaged_display[32]; /* cache of the value in the wmWindow */
 } SpaceImage;
 
 typedef struct SpaceNla {

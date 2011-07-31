@@ -56,7 +56,7 @@ class INFO_HT_header(bpy.types.Header):
         if rd.has_multiple_engines:
             layout.prop(rd, "engine", text="")
 
-        layout.prop(screen, "display_colorspace", text="")
+        layout.prop(window, "colormanaged_display", text="")
 
         layout.separator()
 

@@ -80,8 +80,6 @@ typedef struct bScreen {
 	void *context;						/* context callback */
 	
 	short handler[8];					/* similar to space handler */
-	
-	char display_colorspace_name[64];
 } bScreen;
 
 typedef struct ScrVert {

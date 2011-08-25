@@ -343,6 +343,7 @@ ImBuf *IMB_allocImBuf(unsigned int x, unsigned int y, uchar d, unsigned int flag
 		ibuf->ftype= TGA;
 		ibuf->channels= 4;	/* float option, is set to other values when buffers get assigned */
 		ibuf->ppm[0]= ibuf->ppm[1]= 150.0 / 0.0254; /* 150dpi -> pixels-per-meter */
+		ibuf->is_float_linear = 1;
 		
 		if(flags & IB_rect) {
 			if(imb_addrectImBuf(ibuf)==FALSE) {

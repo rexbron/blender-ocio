@@ -56,6 +56,7 @@
 #include "BKE_packedFile.h"
 #include "BKE_report.h"
 #include "BKE_screen.h"
+#include "BKE_colormanagement.h"
 
 #include "IMB_imbuf.h"
 #include "IMB_imbuf_types.h"

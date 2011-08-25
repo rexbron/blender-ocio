@@ -152,8 +152,13 @@ typedef struct ColorSpace {
 	int index;
 	char name[32];
 	char family[32];
-	int pad;
+	int flag;
 } ColorSpace;
+
+/* colorspace->flag */
+#define COLORSPACE_IS_SCENE_LINEAR		(1<<0)
+#define COLORSPACE_IS_COLOR_PICKING		(1<<1)
+#define COLORSPACE_IS_TEXTURE_PAINT		(1<<2)
 
 typedef struct ColorManagedDisplay {
 	struct ColorManagedDisplay *next, *prev;

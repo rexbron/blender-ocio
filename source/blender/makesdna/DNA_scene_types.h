@@ -326,7 +326,7 @@ typedef struct RenderData {
 	
 	
 	/* color management settings - color profiles, gamma correction, etc */
-	int color_mgt_flag;
+	int color_mgt_flag; /* deprecated OCIO TODO check for use and remove */
 	
 	/** post-production settings. Depricated, but here for upwards compat (initialized to 1) */	 
 	float postgamma, posthue, postsat;	 

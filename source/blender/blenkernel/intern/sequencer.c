@@ -63,6 +63,7 @@
 #include "BKE_scene.h"
 #include "RNA_access.h"
 #include "BKE_utildefines.h"
+#include "BKE_colormanagement.h"
 
 #include "RE_pipeline.h"
 
@@ -1955,6 +1956,9 @@ static ImBuf * seq_render_scene_strip_impl(
 		RE_AcquireResultImage(re, &rres);
 		
 		if(rres.rectf) {
+			ColorSpace* seq_cs = BCM_get_sequencer_colorspace();
+			ColorSpace* render_cs = BCM_get_scene_linear_colorspace();
+			
 			ibuf= IMB_allocImBuf(rres.rectx, rres.recty, 32, IB_rectfloat);
 			memcpy(ibuf->rect_float, rres.rectf, 4*sizeof(float)*rres.rectx*rres.recty);
 			if(rres.rectz) {
@@ -1963,8 +1967,8 @@ static ImBuf * seq_render_scene_strip_impl(
 			}
 
 			/* float buffers in the sequencer are not linear */
-			ibuf->profile= IB_PROFILE_LINEAR_RGB;
-			IMB_convert_profile(ibuf, IB_PROFILE_SRGB);			
+			ibuf->profile= render_cs->index;
+			IMB_convert_profile(ibuf, seq_cs);
 		}
 		else if (rres.rect32) {
 			ibuf= IMB_allocImBuf(rres.rectx, rres.recty, 32, IB_rect);
@@ -2078,13 +2082,17 @@ static ImBuf * seq_render_strip(SeqRenderData context, Sequence * seq, float cfr
 			}
 
 			if (s_elem && (ibuf = IMB_loadiffname(name, IB_rect))) {
+				ColorSpace* seq_cs = BCM_get_sequencer_colorspace();
+				//ColorSpace* render_cs = BCM_get_scene_linear_colorspace();
+				
 				/* we don't need both (speed reasons)! */
 				if (ibuf->rect_float && ibuf->rect)
 					imb_freerectImBuf(ibuf);
 
+/* OCIO TODO: set the profile after loading ibuf */
 				/* all sequencer color is done in SRGB space, linear gives odd crossfades */
-				if(ibuf->profile == IB_PROFILE_LINEAR_RGB)
-					IMB_convert_profile(ibuf, IB_PROFILE_NONE);
+//				if(ibuf->profile == IB_PROFILE_LINEAR_RGB)
+					IMB_convert_profile(ibuf, seq_cs);
 
 				copy_to_ibuf_still(context, seq, nr, ibuf);
 

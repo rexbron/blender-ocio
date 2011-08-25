@@ -355,6 +355,7 @@ void rgb_float_to_byte(const float *in, unsigned char *out)
 	out[2]= (char)((b <= 0)? 0 : (b >= 255)? 255 : b);
 }
 
+
 /* ********************************* color transforms ********************************* */
 
 
@@ -409,42 +410,7 @@ void linearrgb_to_srgb_v3_v3(float *col_to, float *col_from)
 	col_to[2] = linearrgb_to_srgb(col_from[2]);
 }
 
-/* todo, should these be moved elsewhere?, they dont belong in imbuf */
-void srgb_to_linearrgb_rgba_buf(float *col, int tot)
-{
-	while(tot--) {
-		srgb_to_linearrgb_v3_v3(col, col);
-		col += 4;
-	}
-}
 
-void linearrgb_to_srgb_rgba_buf(float *col, int tot)
-{
-	while(tot--) {
-		linearrgb_to_srgb_v3_v3(col, col);
-		col += 4;
-	}
-}
-
-void srgb_to_linearrgb_rgba_rgba_buf(float *col_to, float *col_from, int tot)
-{
-	while(tot--) {
-		srgb_to_linearrgb_v3_v3(col_to, col_from);
-		col_to[3]= col_from[3];
-		col_to += 4;
-		col_from += 4;
-	}
-}
-
-void linearrgb_to_srgb_rgba_rgba_buf(float *col_to, float *col_from, int tot)
-{
-	while(tot--) {
-		linearrgb_to_srgb_v3_v3(col_to, col_from);
-		col_to[3]= col_from[3];
-		col_to += 4;
-		col_from += 4;
-	}
-}
 
 void minmax_rgb(short c[])
 {

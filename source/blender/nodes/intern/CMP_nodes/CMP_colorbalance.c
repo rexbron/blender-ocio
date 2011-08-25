@@ -35,6 +35,8 @@
 
 #include "../CMP_util.h"
 
+#include "BKE_colormanagement.h"
+
 
 /* ******************* Color Balance ********************************* */
 static bNodeSocketType cmp_node_colorbalance_in[]={

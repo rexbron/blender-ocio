@@ -62,6 +62,7 @@
 #include "BKE_screen.h"
 #include "BKE_texture.h"
 #include "BKE_report.h"
+#include "BKE_colormanagement.h"
 
 #include "RE_pipeline.h"
 
@@ -1173,6 +1174,7 @@ static void sample_apply(bContext *C, wmOperator *op, wmEvent *event)
 	if(!ibuf)
 		return;
 	
+	/* OCIO TODO*/
 	if(!ibuf->rect) {
 		if(info->color_manage)
 			ibuf->profile = IB_PROFILE_LINEAR_RGB;

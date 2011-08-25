@@ -57,6 +57,7 @@
 #include "BKE_report.h"
 #include "BKE_texture.h"
 #include "BKE_unit.h"
+#include "BKE_colormanagement.h"
 
 #include "ED_screen.h"
 #include "ED_util.h"

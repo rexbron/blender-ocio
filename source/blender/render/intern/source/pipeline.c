@@ -59,6 +59,7 @@
 #include "BKE_sequencer.h"
 #include "BKE_utildefines.h"
 #include "BKE_writeavi.h"	/* <------ should be replaced once with generic movie module */
+#include "BKE_colormanagement.h"
 
 #include "BLI_math.h"
 #include "BLI_blenlib.h"
@@ -2544,24 +2545,16 @@ static void do_render_seq(Render * re)
 
 	if(ibuf) {
 		if(ibuf->rect_float) {
+			ColorSpace* sequencer_cs = BCM_get_sequencer_colorspace();
+			ColorSpace* internal_render_cs = BCM_get_scene_linear_colorspace();
+			
 			if (!rr->rectf)
 				rr->rectf= MEM_mallocN(4*sizeof(float)*rr->rectx*rr->recty, "render_seq rectf");
 			
-			/* color management: when off ensure rectf is non-lin, since thats what the internal
-			 * render engine delivers */
-			if(re->r.color_mgt_flag & R_COLOR_MANAGEMENT) {
-				if(ibuf->profile == IB_PROFILE_LINEAR_RGB)
-					memcpy(rr->rectf, ibuf->rect_float, 4*sizeof(float)*rr->rectx*rr->recty);
-				else
-					srgb_to_linearrgb_rgba_rgba_buf(rr->rectf, ibuf->rect_float, rr->rectx*rr->recty);
-					
-			}
-			else {
-				if(ibuf->profile != IB_PROFILE_LINEAR_RGB)
-					memcpy(rr->rectf, ibuf->rect_float, 4*sizeof(float)*rr->rectx*rr->recty);
-				else
-					linearrgb_to_srgb_rgba_rgba_buf(rr->rectf, ibuf->rect_float, rr->rectx*rr->recty);
-			}
+			/* color management */
+			memcpy(rr->rectf, ibuf->rect_float, 4*sizeof(float)*rr->rectx*rr->recty);
+			BCM_apply_transform(rr->rectf,rr->rectx, rr->recty, 4, sequencer_cs->name, internal_render_cs->name);
+			
 			
 			/* TSK! Since sequence render doesn't free the *rr render result, the old rect32
 			   can hang around when sequence render has rendered a 32 bits one before */

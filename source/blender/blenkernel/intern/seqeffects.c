@@ -52,6 +52,7 @@
 #include "BKE_sequencer.h"
 #include "BKE_texture.h"
 #include "BKE_utildefines.h"
+#include "BKE_colormanagement.h"
 
 #include "IMB_imbuf_types.h"
 #include "IMB_imbuf.h"

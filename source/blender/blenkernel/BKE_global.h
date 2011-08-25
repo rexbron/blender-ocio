@@ -95,6 +95,9 @@ typedef struct Global {
 
 	/* ndof device found ? */
 	int ndofdevice;
+	
+	struct ListBase colorspaces;
+	struct ListBase color_managed_displays;
 } Global;
 
 /* **************** GLOBAL ********************* */

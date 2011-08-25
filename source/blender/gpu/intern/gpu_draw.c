@@ -64,6 +64,7 @@
 #include "BKE_material.h"
 #include "BKE_node.h"
 #include "BKE_object.h"
+#include "BKE_colormanagement.h"
 
 
 #include "BLI_threads.h"

@@ -240,7 +240,8 @@ struct ImBuf *imb_loadhdr(unsigned char *mem, size_t size, int flags)
 			if (oriY[0]=='-') IMB_flipy(ibuf);
 			
 			if (flags & IB_rect) {
-				IMB_rect_from_float(ibuf);
+/* OCIO TODO: do this after load in BKE image.c where colormanagement is available */
+//				IMB_rect_from_float(ibuf);
 			}
 			
 			return ibuf;

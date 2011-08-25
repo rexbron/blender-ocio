@@ -848,6 +848,32 @@ class USERPREF_PT_input(bpy.types.Panel, InputKeyMapPanel):
         #print("runtime", time.time() - start)
 
 
+class USERPREF_PT_colormanagement(bpy.types.Panel):
+    bl_space_type = 'USER_PREFERENCES'
+    bl_label = "Color Management"
+    bl_region_type = 'WINDOW'
+    bl_options = {'HIDE_HEADER'}
+
+    @classmethod
+    def poll(cls, context):
+        userpref = context.user_preferences
+        return (userpref.active_section == 'COLORMAN')
+
+    def draw(self, context):
+        layout = self.layout
+
+        userpref = context.user_preferences
+        cm = userpref.color_management
+
+        split = layout.split(percentage=0.33)
+
+        col = split.column()
+        col.prop(cm, "default_8bits_colorspace")
+        col.prop(cm, "default_16bits_colorspace")
+        col.prop(cm, "default_log_colorspace")
+        col.prop(cm, "default_float_colorspace")
+
+
 class USERPREF_MT_addons_dev_guides(bpy.types.Menu):
     bl_label = "Development Guides"
 

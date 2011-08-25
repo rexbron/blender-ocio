@@ -140,7 +140,7 @@ void glaDrawPixelsSafe		(float x, float y, int img_w, int img_h, int row_w, int 
 	 */
 
 	/* only for float rects, converts to 32 bits and draws */
-void glaDrawPixelsSafe_to32(float fx, float fy, int img_w, int img_h, int row_w, float *rectf, int gamma_correct);
+void glaDrawPixelsSafe_to32(float fx, float fy, int img_w, int img_h, int row_w, float *rectf, const char* gamma_correct);
 
 
 void glaDrawPixelsTex		(float x, float y, int img_w, int img_h, int format, void *rect);

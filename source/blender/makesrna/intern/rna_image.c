@@ -40,6 +40,7 @@
 #include "BKE_context.h"
 #include "BKE_depsgraph.h"
 #include "BKE_image.h"
+#include "BKE_colormanagement.h"
 
 #include "WM_types.h"
 
@@ -54,6 +55,40 @@ static EnumPropertyItem image_source_items[]= {
 #ifdef RNA_RUNTIME
 
 #include "IMB_imbuf_types.h"
+#include "BKE_colormanagement.h"
+#include "DNA_color_types.h"
+
+static int rna_Image_colorspace_getf(struct PointerRNA *ptr)
+{
+	Image* ima= (Image*)ptr->data;
+	ColorSpace* cs = BCM_get_colorspace(ima->colorspace);
+	if(cs)
+		return cs->index;
+	return 0;
+}
+
+static void rna_Image_colorspace_setf(struct PointerRNA *ptr, int value)
+{
+	Image* ima= (Image*)ptr->data;
+	ColorSpace* cs = BCM_get_colorspace_from_index(value);
+	if(cs)
+		BLI_strncpy(ima->colorspace, cs->name, 32);
+	else
+		BLI_strncpy(ima->colorspace, "", 32);
+}
+
+static EnumPropertyItem* rna_Image_colorspace_itemf(bContext *C, PointerRNA *ptr, PropertyRNA *UNUSED(prop), int *free)
+{
+	EnumPropertyItem *items = NULL;
+	int totitem = 0;
+	
+	BCM_add_colorspaces_items(&items, &totitem, 1);
+	RNA_enum_item_end(&items, &totitem);
+	
+	*free = 1;
+	
+	return items;
+}
 
 static void rna_Image_animated_update(Main *UNUSED(bmain), Scene *UNUSED(scene), PointerRNA *ptr)
 {
@@ -405,6 +440,10 @@ static void rna_def_image(BlenderRNA *brna)
 {
 	StructRNA *srna;
 	PropertyRNA *prop;
+
+	static const EnumPropertyItem image_colorspace_items[] = {
+		{0, "DEFAULT", 0, "Default", ""},
+		{0, NULL, 0, NULL, NULL}};
 	static const EnumPropertyItem prop_type_items[]= {
 		{IMA_TYPE_IMAGE, "IMAGE", 0, "Image", ""},
 		{IMA_TYPE_MULTILAYER, "MULTILAYER", 0, "Multilayer", ""},
@@ -433,6 +472,13 @@ static void rna_def_image(BlenderRNA *brna)
 	prop= RNA_def_property(srna, "filepath", PROP_STRING, PROP_FILEPATH);
 	RNA_def_property_string_sdna(prop, NULL, "name");
 	RNA_def_property_ui_text(prop, "File Name", "Image/Movie file name");
+	RNA_def_property_update(prop, NC_IMAGE|ND_DISPLAY, "rna_Image_reload_update");
+
+	/* colorspace  */
+	prop= RNA_def_property(srna, "colorspace", PROP_ENUM, PROP_NONE);
+	RNA_def_property_enum_items(prop, image_colorspace_items);
+	RNA_def_property_enum_funcs(prop, "rna_Image_colorspace_getf", "rna_Image_colorspace_setf", "rna_Image_colorspace_itemf");
+	RNA_def_property_ui_text(prop, "Colorspace", "Colorspace used by the file.");
 	RNA_def_property_update(prop, NC_IMAGE|ND_DISPLAY, "rna_Image_reload_update");
 
 	/* eek. this is horrible but needed so we can save to a new name without blanking the data :( */

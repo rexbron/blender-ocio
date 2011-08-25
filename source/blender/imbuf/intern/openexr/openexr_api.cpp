@@ -234,7 +234,8 @@ static int imb_save_openexr_half(struct ImBuf *ibuf, const char *name, int flags
 		if(ibuf->rect_float) {
 			float *from;
 
-			if(ibuf->profile == IB_PROFILE_LINEAR_RGB) {
+/* OCIO TODO: do this before save in BKE image.c where colormanagement is available */
+//			if(ibuf->profile == IB_PROFILE_LINEAR_RGB) {
 				for (int i = ibuf->y-1; i >= 0; i--)
 				{
 					from= ibuf->rect_float + channels*i*width;
@@ -248,27 +249,27 @@ static int imb_save_openexr_half(struct ImBuf *ibuf, const char *name, int flags
 						to++; from += 4;
 					}
 				}
-			}
-			else {
-				for (int i = ibuf->y-1; i >= 0; i--)
-				{
-					from= ibuf->rect_float + channels*i*width;
+//			}
+//			else {
+//				for (int i = ibuf->y-1; i >= 0; i--)
+//				{
+//					from= ibuf->rect_float + channels*i*width;
 
-					for (int j = ibuf->x; j > 0; j--)
-					{
-						to->r = srgb_to_linearrgb(from[0]);
-						to->g = srgb_to_linearrgb(from[1]);
-						to->b = srgb_to_linearrgb(from[2]);
-						to->a = (channels >= 4)? from[3]: 1.0f;
-						to++; from += 4;
-					}
-				}
-			}
+//					for (int j = ibuf->x; j > 0; j--)
+//					{
+//						to->r = srgb_to_linearrgb(from[0]);
+//						to->g = srgb_to_linearrgb(from[1]);
+//						to->b = srgb_to_linearrgb(from[2]);
+//						to->a = (channels >= 4)? from[3]: 1.0f;
+//						to++; from += 4;
+//					}
+//				}
+//			}
 		}
 		else {
 			unsigned char *from;
 
-			if(ibuf->profile == IB_PROFILE_LINEAR_RGB) {
+//			if(ibuf->profile == IB_PROFILE_LINEAR_RGB) {
 				for (int i = ibuf->y-1; i >= 0; i--)
 				{
 					from= (unsigned char *)ibuf->rect + channels*i*width;
@@ -282,22 +283,22 @@ static int imb_save_openexr_half(struct ImBuf *ibuf, const char *name, int flags
 						to++; from += 4;
 					}
 				}
-			}
-			else {
-				for (int i = ibuf->y-1; i >= 0; i--)
-				{
-					from= (unsigned char *)ibuf->rect + channels*i*width;
+//			}
+//			else {
+//				for (int i = ibuf->y-1; i >= 0; i--)
+//				{
+//					from= (unsigned char *)ibuf->rect + channels*i*width;
 
-					for (int j = ibuf->x; j > 0; j--)
-					{
-						to->r = srgb_to_linearrgb((float)from[0] / 255.0);
-						to->g = srgb_to_linearrgb((float)from[1] / 255.0);
-						to->b = srgb_to_linearrgb((float)from[2] / 255.0);
-						to->a = channels >= 4 ? (float)from[3]/255.0 : 1.0f;
-						to++; from += 4;
-					}
-				}
-			}
+//					for (int j = ibuf->x; j > 0; j--)
+//					{
+//						to->r = srgb_to_linearrgb((float)from[0] / 255.0);
+//						to->g = srgb_to_linearrgb((float)from[1] / 255.0);
+//						to->b = srgb_to_linearrgb((float)from[2] / 255.0);
+//						to->a = channels >= 4 ? (float)from[3]/255.0 : 1.0f;
+//						to++; from += 4;
+//					}
+//				}
+//			}
 		}
 		
 //		printf("OpenEXR-save: Writing OpenEXR file of height %d.\n", height);

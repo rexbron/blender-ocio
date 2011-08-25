@@ -40,6 +40,7 @@
 #include "BLI_utildefines.h"
 
 #include "BKE_colortools.h"
+#include "BKE_colormanagement.h"
 
 #include "BLI_math.h"
 #include "BLI_threads.h"
@@ -533,7 +534,7 @@ void glaDrawPixelsTex(float x, float y, int img_w, int img_h, int format, void *
 }
 
 /* row_w is unused but kept for completeness */
-void glaDrawPixelsSafe_to32(float fx, float fy, int img_w, int img_h, int UNUSED(row_w), float *rectf, int do_gamma_correct)
+void glaDrawPixelsSafe_to32(float fx, float fy, int img_w, int img_h, int UNUSED(row_w), float *rectf, const char* gamma_correct_profile)
 {
 	unsigned char *rect32;
 	
@@ -542,8 +543,9 @@ void glaDrawPixelsSafe_to32(float fx, float fy, int img_w, int img_h, int UNUSED
 	
 	rect32= MEM_mallocN(img_w*img_h*sizeof(int), "temp 32 bits");
 	
-	if (do_gamma_correct) {
-		floatbuf_to_srgb_byte(rectf, rect32, 0, img_w, 0, img_h, img_w);
+	if (gamma_correct_profile) {
+		ColorSpace* cs = BCM_get_scene_linear_colorspace();
+		BCM_apply_transform_to_byte(rectf, rect32, img_w, img_h, cs->name, gamma_correct_profile);
 	} else {
 		floatbuf_to_byte(rectf, rect32, 0, img_w, 0, img_h, img_w);
 	 }

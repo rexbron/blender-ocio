@@ -103,6 +103,7 @@ typedef struct ImBuf {
 	/* parameters used by conversion between byte and float */
 	float dither;				/* random dither value, for conversion from float -> byte rect */
 	short profile;				/* color space/profile preset that the byte rect buffer represents */
+	short is_float_linear;		/* used as a bolean to specify the (rare) case where rect_float is not in scene_linear colorspace */
 
 	/* mipmapping */
 	struct ImBuf *mipmap[IB_MIPMAP_LEVELS]; /* MipMap levels, a series of halved images */

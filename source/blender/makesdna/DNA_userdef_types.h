@@ -300,6 +300,19 @@ typedef struct SolidLight {
 	float col[4], spec[4], vec[4];
 } SolidLight;
 
+typedef struct ColorManagementOptions
+{
+	int flag;
+	char default_8bits[32];
+	char default_16bits[32];
+	char default_log[32];
+	char default_float[32];
+}ColorManagementOptions;
+
+/* colormanagementoptions->flag */
+#define COLORMAN_UI_USE_WINDOW_CS (1<<0)
+#define COLORMAN_PREVIEW_USE_WINDOW_CS (1<<1)
+
 typedef struct UserDef {
 	int flag, dupflag;
 	int savetime;
@@ -392,6 +405,8 @@ typedef struct UserDef {
 	int pad3;
 
 	char author[80];	/* author name for file formats supporting it */
+	
+	struct ColorManagementOptions colormanagement_options;
 } UserDef;
 
 extern UserDef U; /* from blenkernel blender.c */
@@ -406,6 +421,7 @@ extern UserDef U; /* from blenkernel blender.c */
 #define USER_SECTION_THEME		4
 #define USER_SECTION_INPUT		5
 #define USER_SECTION_ADDONS 	6
+#define USER_SECTION_COLORMAN	7
 
 /* flag */
 #define USER_AUTOSAVE			(1 << 0)

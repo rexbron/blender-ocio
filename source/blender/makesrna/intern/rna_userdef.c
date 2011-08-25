@@ -56,6 +56,7 @@
 #include "BKE_depsgraph.h"
 #include "BKE_global.h"
 #include "BKE_main.h"
+#include "BKE_colormanagement.h"
 
 #include "GPU_draw.h"
 
@@ -293,6 +294,95 @@ static void rna_userdef_text_update(Main *UNUSED(bmain), Scene *UNUSED(scene), P
 {
 	BLF_cache_clear();
 	WM_main_add_notifier(NC_WINDOW, NULL);
+}
+
+static int rna_userdef_colorspace_8bits_getf(struct PointerRNA *ptr)
+{
+	ColorManagementOptions* cmo= (ColorManagementOptions*)ptr->data;
+	ColorSpace* cs = BCM_get_colorspace(cmo->default_8bits);
+	if(cs)
+		return cs->index;
+	return 0;
+}
+
+static void rna_userdef_colorspace_8bits_setf(struct PointerRNA *ptr, int value)
+{
+	ColorManagementOptions* cmo= (ColorManagementOptions*)ptr->data;
+	ColorSpace* cs = BCM_get_colorspace_from_index(value);
+	if(cs)
+		BLI_strncpy(cmo->default_8bits, cs->name, 32);
+	else
+		BLI_strncpy(cmo->default_8bits, "", 32);
+}
+
+static int rna_userdef_colorspace_16bits_getf(struct PointerRNA *ptr)
+{
+	ColorManagementOptions* cmo= (ColorManagementOptions*)ptr->data;
+	ColorSpace* cs = BCM_get_colorspace(cmo->default_16bits);
+	if(cs)
+		return cs->index;
+	return 0;
+}
+
+static void rna_userdef_colorspace_16bits_setf(struct PointerRNA *ptr, int value)
+{
+	ColorManagementOptions* cmo= (ColorManagementOptions*)ptr->data;
+	ColorSpace* cs = BCM_get_colorspace_from_index(value);
+	if(cs)
+		BLI_strncpy(cmo->default_16bits, cs->name, 32);
+	else
+		BLI_strncpy(cmo->default_16bits, "", 32);
+}
+
+static int rna_userdef_colorspace_log_getf(struct PointerRNA *ptr)
+{
+	ColorManagementOptions* cmo= (ColorManagementOptions*)ptr->data;
+	ColorSpace* cs = BCM_get_colorspace(cmo->default_log);
+	if(cs)
+		return cs->index;
+	return 0;
+}
+
+static void rna_userdef_colorspace_log_setf(struct PointerRNA *ptr, int value)
+{
+	ColorManagementOptions* cmo= (ColorManagementOptions*)ptr->data;
+	ColorSpace* cs = BCM_get_colorspace_from_index(value);
+	if(cs)
+		BLI_strncpy(cmo->default_log, cs->name, 32);
+	else
+		BLI_strncpy(cmo->default_log, "", 32);
+}
+
+static int rna_userdef_colorspace_float_getf(struct PointerRNA *ptr)
+{
+	ColorManagementOptions* cmo= (ColorManagementOptions*)ptr->data;
+	ColorSpace* cs = BCM_get_colorspace(cmo->default_float);
+	if(cs)
+		return cs->index;
+	return 0;
+}
+
+static void rna_userdef_colorspace_float_setf(struct PointerRNA *ptr, int value)
+{
+	ColorManagementOptions* cmo= (ColorManagementOptions*)ptr->data;
+	ColorSpace* cs = BCM_get_colorspace_from_index(value);
+	if(cs)
+		BLI_strncpy(cmo->default_float, cs->name, 32);
+	else
+		BLI_strncpy(cmo->default_float, "", 32);
+}
+
+static EnumPropertyItem* rna_userdef_colorspace_itemf(bContext *C, PointerRNA *ptr, PropertyRNA *UNUSED(prop), int *free)
+{
+	EnumPropertyItem *items = NULL;
+	int totitem = 0;
+	
+	BCM_add_colorspaces_items(&items, &totitem, 0);
+	RNA_enum_item_end(&items, &totitem);
+	
+	*free = 1;
+	
+	return items;
 }
 
 #else
@@ -2933,6 +3023,40 @@ void rna_def_userdef_addon_collection(BlenderRNA *brna, PropertyRNA *cprop)
 	RNA_def_property_flag(parm, PROP_REQUIRED|PROP_NEVER_NULL);
 }
 
+void rna_def_userdef_color_management(BlenderRNA *brna)
+{
+	PropertyRNA *prop;
+	StructRNA *srna;
+	
+	static const EnumPropertyItem userdef_colorspace_items[] = {
+		{0, "DEFAULT", 0, "Default", ""},
+		{0, NULL, 0, NULL, NULL}};
+		
+	srna= RNA_def_struct(brna, "UserPreferencesColorManagement", NULL);
+	RNA_def_struct_sdna(srna, "ColorManagementOptions");
+	RNA_def_struct_ui_text(srna, "Color Management", "Default color-spaces for image input/output");
+	
+	prop= RNA_def_property(srna, "default_8bits_colorspace", PROP_ENUM, PROP_NONE);
+	RNA_def_property_enum_items(prop, userdef_colorspace_items);
+	RNA_def_property_enum_funcs(prop, "rna_userdef_colorspace_8bits_getf", "rna_userdef_colorspace_8bits_setf", "rna_userdef_colorspace_itemf");
+	RNA_def_property_ui_text(prop, "Default 8bits", "Default color-space for 8bits images");
+	
+	prop= RNA_def_property(srna, "default_16bits_colorspace", PROP_ENUM, PROP_NONE);
+	RNA_def_property_enum_items(prop, userdef_colorspace_items);
+	RNA_def_property_enum_funcs(prop, "rna_userdef_colorspace_16bits_getf", "rna_userdef_colorspace_16bits_setf", "rna_userdef_colorspace_itemf");
+	RNA_def_property_ui_text(prop, "Default 16bits", "Default color-space for 16bits images");
+	
+	prop= RNA_def_property(srna, "default_log_colorspace", PROP_ENUM, PROP_NONE);
+	RNA_def_property_enum_items(prop, userdef_colorspace_items);
+	RNA_def_property_enum_funcs(prop, "rna_userdef_colorspace_log_getf", "rna_userdef_colorspace_log_setf", "rna_userdef_colorspace_itemf");
+	RNA_def_property_ui_text(prop, "Default log", "Default color-space for log images");
+	
+	prop= RNA_def_property(srna, "default_float_colorspace", PROP_ENUM, PROP_NONE);
+	RNA_def_property_enum_items(prop, userdef_colorspace_items);
+	RNA_def_property_enum_funcs(prop, "rna_userdef_colorspace_float_getf", "rna_userdef_colorspace_float_setf", "rna_userdef_colorspace_itemf");
+	RNA_def_property_ui_text(prop, "Default float", "Default color-space for float images");
+}
+
 void RNA_def_userdef(BlenderRNA *brna)
 {
 	StructRNA *srna;
@@ -2946,6 +3070,7 @@ void RNA_def_userdef(BlenderRNA *brna)
 		{USER_SECTION_THEME, "THEMES", 0, "Themes", ""},
 		{USER_SECTION_FILE, "FILES", 0, "File", ""},
 		{USER_SECTION_SYSTEM, "SYSTEM", 0, "System", ""},
+		{USER_SECTION_COLORMAN, "COLORMAN", 0, "Color Management", ""},
 		{0, NULL, 0, NULL, NULL}};
 
 	rna_def_userdef_dothemes(brna);
@@ -2977,6 +3102,11 @@ void RNA_def_userdef(BlenderRNA *brna)
 	RNA_def_property_ui_text(prop, "Addon", "");
 	rna_def_userdef_addon_collection(brna, prop);
 
+	prop= RNA_def_property(srna, "color_management", PROP_POINTER, PROP_NONE);
+	RNA_def_property_pointer_sdna(prop, NULL, "colormanagement_options");
+	RNA_def_property_struct_type(prop, "UserPreferencesColorManagement");
+	RNA_def_property_ui_text(prop, "Color Management", "Color management settings");
+	
 
 	/* nested structs */
 	prop= RNA_def_property(srna, "view", PROP_POINTER, PROP_NONE);
@@ -3015,6 +3145,7 @@ void RNA_def_userdef(BlenderRNA *brna)
 	rna_def_userdef_filepaths(brna);
 	rna_def_userdef_system(brna);
 	rna_def_userdef_addon(brna);
+	rna_def_userdef_color_management(brna);
 	
 }
 

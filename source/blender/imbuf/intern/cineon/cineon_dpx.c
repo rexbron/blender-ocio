@@ -118,7 +118,8 @@ static struct ImBuf *imb_load_dpx_cineon(unsigned char *mem, int use_cineon, int
 	logImageClose(image);
 	
 	if (flags & IB_rect) {
-		IMB_rect_from_float(ibuf);
+/* OCIO TODO*/
+//		IMB_rect_from_float(ibuf);
 	}
 	return ibuf;
 }
@@ -145,8 +146,12 @@ static int imb_save_dpx_cineon(ImBuf *ibuf, const char *filename, int use_cineon
 	 * Get the drawable for the current image...
 	 */
 
-	fbuf= IMB_float_profile_ensure(ibuf, conversion.doLogarithm ? IB_PROFILE_LINEAR_RGB : IB_PROFILE_NONE, &is_alloc);
-
+/* OCIO TODO */
+//	fbuf= IMB_float_profile_ensure(ibuf, conversion.doLogarithm ? IB_PROFILE_LINEAR_RGB : IB_PROFILE_NONE, &is_alloc);
+	IMB_float_from_rect_simple(ibuf);
+	fbuf = ibuf->rect_float;
+	is_alloc = 0;
+	
 	if (fbuf == NULL) { /* in the unlikely event that converting to a float buffer fails */
 		return 0;
 	}

@@ -42,6 +42,7 @@
 #include "BLI_utildefines.h"
 
 #include "BKE_colortools.h"
+#include "BKE_colormanagement.h"
 #include "BKE_texture.h"
 
 

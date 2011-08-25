@@ -34,6 +34,8 @@
 
 #include "CMP_util.h"
 
+#include "BKE_colormanagement.h"
+
 CompBuf *alloc_compbuf(int sizex, int sizey, int type, int alloc)
 {
 	CompBuf *cbuf= MEM_callocN(sizeof(CompBuf), "compbuf");
@@ -623,11 +625,12 @@ void generate_preview(void *data, bNode *node, CompBuf *stackbuf)
 	RenderData *rd= data;
 	bNodePreview *preview= node->preview;
 	int xsize, ysize;
-	int color_manage= rd->color_mgt_flag & R_COLOR_MANAGEMENT;
 	unsigned char *rect;
 	
 	if(preview && stackbuf) {
 		CompBuf *cbuf, *stackbuf_use;
+		ColorSpace* compositor_cs = BCM_get_scene_linear_colorspace();
+		ColorSpace* preview_cs = BCM_get_color_picking_colorspace();
 		
 		if(stackbuf->rect==NULL && stackbuf->rect_procedural==NULL) return;
 		
@@ -650,10 +653,11 @@ void generate_preview(void *data, bNode *node, CompBuf *stackbuf)
 		/* convert to byte for preview */
 		rect= MEM_callocN(sizeof(unsigned char)*4*xsize*ysize, "bNodePreview.rect");
 
-		if(color_manage)
-			floatbuf_to_srgb_byte(cbuf->rect, rect, 0, xsize, 0, ysize, xsize);
-		else
-			floatbuf_to_byte(cbuf->rect, rect, 0, xsize, 0, ysize, xsize);
+/* OCIO TODO use wmWindow colormanaged display default view */
+//		floatbuf_to_srgb_byte(cbuf->rect, rect, 0, xsize, 0, ysize, xsize);
+		BCM_apply_transform_to_byte(cbuf->rect, rect, xsize, ysize, compositor_cs->name, preview_cs->name);
+
+		
 		
 		free_compbuf(cbuf);
 		if(stackbuf_use!=stackbuf)

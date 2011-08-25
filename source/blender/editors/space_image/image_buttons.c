@@ -760,6 +760,8 @@ void uiTemplateImage(uiLayout *layout, bContext *C, PointerRNA *ptr, const char 
 			if(ima->source != IMA_SRC_GENERATED) {
 				if(compact == 0) { /* background image view doesnt need these */
 					uiItemS(layout);
+					
+					uiItemR(layout, &imaptr, "colorspace", 0, NULL, ICON_NONE);
 
 					split= uiLayoutSplit(layout, 0, 0);
 

@@ -34,6 +34,7 @@
 
 #include "../CMP_util.h"
 
+#include "BKE_colormanagement.h"
 
 /* **************** IMAGE (and RenderResult, multilayer image) ******************** */
 
@@ -83,32 +84,8 @@ static CompBuf *node_composit_get_image(RenderData *rd, Image *ima, ImageUser *i
 
 	/* now we need a float buffer from the image with matching color management */
 	/* XXX weak code, multilayer is excluded from this */
-	if(ibuf->channels == 4 && ima->rr==NULL) {
-		if(rd->color_mgt_flag & R_COLOR_MANAGEMENT) {
-			if(ibuf->profile != IB_PROFILE_NONE) {
-				rect= ibuf->rect_float;
-			}
-			else {
-				rect= MEM_mapallocN(sizeof(float) * 4 * ibuf->x * ibuf->y, "node_composit_get_image");
-				srgb_to_linearrgb_rgba_rgba_buf(rect, ibuf->rect_float, ibuf->x * ibuf->y);
-				alloc= TRUE;
-			}
-		}
-		else {
-			if(ibuf->profile == IB_PROFILE_NONE) {
-				rect= ibuf->rect_float;
-			}
-			else {
-				rect= MEM_mapallocN(sizeof(float) * 4 * ibuf->x * ibuf->y, "node_composit_get_image");
-				linearrgb_to_srgb_rgba_rgba_buf(rect, ibuf->rect_float, ibuf->x * ibuf->y);
-				alloc= TRUE;
-			}
-		}
-	}
-	else {
-		/* non-rgba passes can't use color profiles */
-		rect= ibuf->rect_float;
-	}
+	rect= ibuf->rect_float;
+	
 	/* done coercing into the correct color management */
 
 

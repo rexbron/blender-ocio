@@ -10,11 +10,12 @@
 
 ConstConfigRcPtr* OCIO_getCurrentConfig(void)
 {
+	ConstConfigRcPtr* config =  new ConstConfigRcPtr();
 	try
 	{
-		ConstConfigRcPtr* config =  new ConstConfigRcPtr();
 		*config = GetCurrentConfig();
-		return config;
+		if(*config)
+			return config;
 	}
 	catch(Exception & exception)
 	{
@@ -40,11 +41,12 @@ void OCIO_setCurrentConfig(const ConstConfigRcPtr* config)
 
 ConstConfigRcPtr* OCIO_configCreateFromEnv(void)
 {
+	ConstConfigRcPtr* config =  new ConstConfigRcPtr();
 	try
 	{
-		ConstConfigRcPtr* config =  new ConstConfigRcPtr();
 		*config = Config::CreateFromEnv();
-		return config;
+		if(*config)
+			return config;
 	}
 	catch(Exception & exception)
 	{
@@ -56,11 +58,12 @@ ConstConfigRcPtr* OCIO_configCreateFromEnv(void)
 
 ConstConfigRcPtr* OCIO_configCreateFromFile(const char* filename)
 {
+	ConstConfigRcPtr* config =  new ConstConfigRcPtr();
 	try
 	{
-		ConstConfigRcPtr* config =  new ConstConfigRcPtr();
 		*config = Config::CreateFromFile(filename);
-		return config;
+		if(*config)
+			return config;
 	}
 	catch(Exception & exception)
 	{
@@ -105,15 +108,17 @@ const char* OCIO_configGetColorSpaceNameByIndex(ConstConfigRcPtr* config, int in
 
 ConstColorSpaceRcPtr* OCIO_configGetColorSpace(ConstConfigRcPtr* config, const char* name)
 {
+	ConstColorSpaceRcPtr* cs =  new ConstColorSpaceRcPtr();
 	try
 	{
-		ConstColorSpaceRcPtr* cs =  new ConstColorSpaceRcPtr();
 		*cs = (*config)->getColorSpace(name);
-		return cs;
+		if(*cs)
+			return cs;
 	}
 	catch(Exception & exception)
 	{
 		std::cerr << "OpenColorIO Error: " << exception.what() << std::endl;
+		delete cs;
 	}
 	return 0;
 }
@@ -239,11 +244,28 @@ void OCIO_colorSpaceRelease(ConstColorSpaceRcPtr* cs)
 
 ConstProcessorRcPtr* OCIO_configGetProcessorWithNames(ConstConfigRcPtr* config, const char* srcName, const char* dstName)
 {
+	ConstProcessorRcPtr* p =  new ConstProcessorRcPtr();
 	try
 	{
-		ConstProcessorRcPtr* p =  new ConstProcessorRcPtr();
 		*p = (*config)->getProcessor(srcName, dstName);
-		return p;
+		if(*p)
+			return p;
+	}
+	catch(Exception & exception)
+	{
+		std::cerr << "OpenColorIO Error: " << exception.what() << std::endl;
+	}
+	return 0;
+}
+
+extern ConstProcessorRcPtr* OCIO_configGetProcessor(ConstConfigRcPtr* config, ConstTransformRcPtr* transform)
+{
+	ConstProcessorRcPtr* p =  new ConstProcessorRcPtr();
+	try
+	{
+		*p = (*config)->getProcessor(*transform);
+		if(*p)
+			return p;
 	}
 	catch(Exception & exception)
 	{
@@ -264,17 +286,17 @@ void OCIO_processorApply(ConstProcessorRcPtr* processor, PackedImageDesc* img)
 	}
 }
 
-extern void OCIO_processorApplyRGB(ConstProcessorRcPtr* processor, float* pixel)
+void OCIO_processorApplyRGB(ConstProcessorRcPtr* processor, float* pixel)
 {
 	(*processor)->applyRGB(pixel);
 }
 
-extern void OCIO_processorApplyRGBA(ConstProcessorRcPtr* processor, float* pixel)
+void OCIO_processorApplyRGBA(ConstProcessorRcPtr* processor, float* pixel)
 {
 	(*processor)->applyRGBA(pixel);
 }
 
-extern void OCIO_processorRelease(ConstProcessorRcPtr* p)
+void OCIO_processorRelease(ConstProcessorRcPtr* p)
 {
 	if(p){
 		delete p;
@@ -282,11 +304,45 @@ extern void OCIO_processorRelease(ConstProcessorRcPtr* p)
 	}
 }
 
-
+const char* OCIO_colorSpaceGetName(ConstColorSpaceRcPtr* cs)
+{
+	return (*cs)->getName();
+}
 
 const char* OCIO_colorSpaceGetFamily(ConstColorSpaceRcPtr* cs)
 {
 	return (*cs)->getFamily();
+}
+
+
+extern DisplayTransformRcPtr* OCIO_createDisplayTransform(void)
+{
+	DisplayTransformRcPtr* dt =  new DisplayTransformRcPtr();
+	*dt = DisplayTransform::Create();
+	return dt;
+}
+
+extern void OCIO_displayTransformSetInputColorSpaceName(DisplayTransformRcPtr* dt, const char * name)
+{
+	(*dt)->setInputColorSpaceName(name);
+}
+
+extern void OCIO_displayTransformSetDisplay(DisplayTransformRcPtr* dt, const char * name)
+{
+	(*dt)->setDisplay(name);
+}
+
+extern void OCIO_displayTransformSetView(DisplayTransformRcPtr* dt, const char * name)
+{
+	(*dt)->setView(name);
+}
+
+extern void OCIO_displayTransformRelease(DisplayTransformRcPtr* dt)
+{
+	if(dt){
+		delete dt;
+		dt = 0;
+	}
 }
 
 PackedImageDesc* OCIO_createPackedImageDesc(float * data, long width, long height, long numChannels,
@@ -304,7 +360,7 @@ PackedImageDesc* OCIO_createPackedImageDesc(float * data, long width, long heigh
 	return 0;
 }
 
-extern void OCIO_packedImageDescRelease(PackedImageDesc* id)
+void OCIO_packedImageDescRelease(PackedImageDesc* id)
 {
 	if(id){
 		delete id;

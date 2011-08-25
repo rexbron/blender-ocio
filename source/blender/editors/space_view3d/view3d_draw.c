@@ -63,6 +63,7 @@
 #include "BKE_scene.h"
 #include "BKE_screen.h"
 #include "BKE_unit.h"
+#include "BKE_colormanagement.h"
 
 #include "RE_pipeline.h"	// make_stars
 

@@ -49,32 +49,14 @@
 #include "BKE_colortools.h"
 #include "BKE_curve.h"
 #include "BKE_fcurve.h"
+#include "BKE_colormanagement.h"
 
 
 #include "IMB_imbuf.h"
 #include "IMB_imbuf_types.h"
 
 
-void floatbuf_to_srgb_byte(float *rectf, unsigned char *rectc, int x1, int x2, int y1, int y2, int UNUSED(w))
-{
-	int x, y;
-	float *rf= rectf;
-	float srgb[3];
-	unsigned char *rc= rectc;
-	
-	for(y=y1; y<y2; y++) {
-		for(x=x1; x<x2; x++, rf+=4, rc+=4) {
-			srgb[0]= linearrgb_to_srgb(rf[0]);
-			srgb[1]= linearrgb_to_srgb(rf[1]);
-			srgb[2]= linearrgb_to_srgb(rf[2]);
 
-			rc[0]= FTOCHAR(srgb[0]);
-			rc[1]= FTOCHAR(srgb[1]);
-			rc[2]= FTOCHAR(srgb[2]);
-			rc[3]= FTOCHAR(rf[3]);
-		}
-	}
-}
 
 void floatbuf_to_byte(float *rectf, unsigned char *rectc, int x1, int x2, int y1, int y2, int UNUSED(w))
 {

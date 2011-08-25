@@ -77,6 +77,7 @@
 #include "BKE_object.h"
 #include "BKE_paint.h"
 #include "BKE_report.h"
+#include "BKE_colormanagement.h"
 
 #include "BIF_gl.h"
 #include "BIF_glutil.h"
@@ -4379,15 +4380,15 @@ static int imapaint_canvas_set(ImagePaintState *s, Image *ima)
 
 		/* temporarily add float rect for cloning */
 		if(s->canvas->rect_float && !s->clonecanvas->rect_float) {
-			int profile = IB_PROFILE_NONE;
+			//int profile = IB_PROFILE_NONE;
 			
 			/* Don't want to color manage, but don't disturb existing profiles */
-			SWAP(int, s->clonecanvas->profile, profile);
+			//SWAP(int, s->clonecanvas->profile, profile);
 
-			IMB_float_from_rect(s->clonecanvas);
+			IMB_float_from_rect_simple(s->clonecanvas);
 			s->clonefreefloat= 1;
 			
-			SWAP(int, s->clonecanvas->profile, profile);
+			//SWAP(int, s->clonecanvas->profile, profile);
 		}
 		else if(!s->canvas->rect_float && !s->clonecanvas->rect)
 			IMB_rect_from_float(s->clonecanvas);

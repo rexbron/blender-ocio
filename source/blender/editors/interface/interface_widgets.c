@@ -46,6 +46,7 @@
 #include "BKE_context.h"
 #include "BKE_curve.h"
 #include "BKE_utildefines.h"
+#include "BKE_colormanagement.h"
 
 #include "RNA_access.h"
 

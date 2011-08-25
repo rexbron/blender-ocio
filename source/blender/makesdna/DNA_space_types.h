@@ -277,6 +277,7 @@ typedef struct SpaceImage {
 	
 	char colormanaged_view[32];
 	char colormanaged_display[32]; /* cache of the value in the wmWindow */
+	struct ImBuf* colormanaged_ibuf; /* buffer to display (display colormanagement should not apply to the image source) */
 } SpaceImage;
 
 typedef struct SpaceNla {

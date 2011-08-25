@@ -276,7 +276,8 @@ struct ImBuf *imb_jp2_decode(unsigned char *mem, size_t size, int flags)
 	opj_image_destroy(image);
 	
 	if (flags & IB_rect) {
-		IMB_rect_from_float(ibuf);
+/* OCIO TODO: do this after load in BKE image.c where colormanagement is available */
+//		IMB_rect_from_float(ibuf);
 	}
 	
 	return(ibuf);
@@ -548,10 +549,11 @@ static opj_image_t* ibuftoimage(ImBuf *ibuf, opj_cparameters_t *parameters) {
 				y_row = y*w;
 				for(x=0; x<w; x++, rect_float+=4) {
 					i = y_row + x;
-					
-					if (ibuf->profile == IB_PROFILE_LINEAR_RGB)
-						linearrgb_to_srgb_v3_v3(rgb, rect_float);
-					else
+
+/* OCIO TODO: do this before in BKE image.c where colormanagement is available */					
+					//if (ibuf->profile == IB_PROFILE_LINEAR_RGB)
+						//linearrgb_to_srgb_v3_v3(rgb, rect_float);
+					//else
 						copy_v3_v3(rgb, rect_float);
 				
 					image->comps[0].data[i] = DOWNSAMPLE_FLOAT_TO_8BIT(rgb[0]);
@@ -568,10 +570,11 @@ static opj_image_t* ibuftoimage(ImBuf *ibuf, opj_cparameters_t *parameters) {
 				y_row = y*w;
 				for(x=0; x<w; x++, rect_float+=4) {
 					i = y_row + x;
-					
-					if (ibuf->profile == IB_PROFILE_LINEAR_RGB)
-						linearrgb_to_srgb_v3_v3(rgb, rect_float);
-					else
+
+/* OCIO TODO: do this before in BKE image.c where colormanagement is available */					
+//					if (ibuf->profile == IB_PROFILE_LINEAR_RGB)
+//						linearrgb_to_srgb_v3_v3(rgb, rect_float);
+//					else
 						copy_v3_v3(rgb, rect_float);
 				
 					image->comps[0].data[i] = DOWNSAMPLE_FLOAT_TO_12BIT(rgb[0]);
@@ -587,10 +590,11 @@ static opj_image_t* ibuftoimage(ImBuf *ibuf, opj_cparameters_t *parameters) {
 				y_row = y*w;
 				for(x=0; x<w; x++, rect_float+=4) {
 					i = y_row + x;
-					
-					if (ibuf->profile == IB_PROFILE_LINEAR_RGB)
-						linearrgb_to_srgb_v3_v3(rgb, rect_float);
-					else
+
+/* OCIO TODO: do this before in BKE image.c where colormanagement is available */					
+//					if (ibuf->profile == IB_PROFILE_LINEAR_RGB)
+//						linearrgb_to_srgb_v3_v3(rgb, rect_float);
+//					else
 						copy_v3_v3(rgb, rect_float);
 				
 					image->comps[0].data[i] = DOWNSAMPLE_FLOAT_TO_16BIT(rgb[0]);

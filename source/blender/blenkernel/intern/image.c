@@ -79,6 +79,7 @@
 #include "BKE_node.h"
 #include "BKE_sequencer.h" /* seq_foreground_frame_get() */
 #include "BKE_utildefines.h"
+#include "BKE_colormanagement.h"
 
 #include "BLF_api.h"
 
@@ -1618,9 +1619,35 @@ static void image_create_multilayer(Image *ima, ImBuf *ibuf, int framenr)
 		ima->rr->framenr= framenr;
 }
 
+static void image_apply_colormanagement_after_load(Image *ima, ImBuf *ibuf)
+{
+	ColorSpace* colorspace;
+	colorspace = BCM_get_colorspace(ima->colorspace);
+	if(!colorspace)
+	{
+		if( strcmp(ima->colorspace, "")!=0 )
+		{
+			printf("Color management Warning: Image using unknown colorspace \"%s\"", ima->colorspace);
+			BLI_strncpy(ima->colorspace, "", 32);	
+		}
+		/* default colorspace according to image bith depth */
+		/* 8bit, 16bit, log, float*/
+		colorspace = BCM_get_default_colorspace_from_imbuf_ftype(ibuf->ftype);
+	}
+	if(colorspace)
+		ibuf->profile = colorspace->index;
+	else
+		ibuf->profile = IB_PROFILE_NONE;
+	
+	ibuf->is_float_linear = 0;
+	BCM_make_imbuf_float_linear(ibuf);
+}
+
 /* common stuff to do with images after loading */
 static void image_initialize_after_load(Image *ima, ImBuf *ibuf)
 {
+	image_apply_colormanagement_after_load(ima, ibuf);
+	
 	/* preview is NULL when it has never been used as an icon before */
 	if(G.background==0 && ima->preview==NULL)
 		BKE_icon_changed(BKE_icon_getid(&ima->id));

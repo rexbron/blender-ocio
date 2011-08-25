@@ -92,6 +92,9 @@ typedef struct Global {
     
 	/* save the allowed windowstate of blender when using -W or -w */
 	int windowstate;
+
+	struct ListBase colorspaces;
+	struct ListBase color_managed_displays;
 } Global;
 
 /* **************** GLOBAL ********************* */

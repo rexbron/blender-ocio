@@ -107,6 +107,8 @@ typedef struct Image {
 	
 	/* display aspect - for UV editing images resized for faster openGL display */
 	float aspx, aspy;
+        
+	char colorspace[32];
 } Image;
 
 

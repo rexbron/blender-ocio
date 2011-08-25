@@ -77,26 +77,26 @@
 
 #define HEADER_HEIGHT 18
 
-static void image_verify_buffer_float(Image *ima, ImBuf *ibuf, int color_manage)
-{
-	/* detect if we need to redo the curve map.
-	   ibuf->rect is zero for compositor and render results after change 
-	   convert to 32 bits always... drawing float rects isnt supported well (atis)
+//static void image_verify_buffer_float(Image *ima, ImBuf *ibuf)
+//{
+//	/* detect if we need to redo the curve map.
+//	   ibuf->rect is zero for compositor and render results after change 
+//	   convert to 32 bits always... drawing float rects isnt supported well (atis)
 	
-	   NOTE: if float buffer changes, we have to manually remove the rect
-	*/
+//	   NOTE: if float buffer changes, we have to manually remove the rect
+//	*/
 
-	if(ibuf->rect_float && (ibuf->rect==NULL || (ibuf->userflags & IB_RECT_INVALID)) ) {
-		if(color_manage) {
-			if(ima && ima->source == IMA_SRC_VIEWER)
-				ibuf->profile = IB_PROFILE_LINEAR_RGB;
-		}
-		else
-			ibuf->profile = IB_PROFILE_NONE;
-
-		IMB_rect_from_float(ibuf);
-	}
-}
+//	if(ibuf->rect_float && (ibuf->rect==NULL || (ibuf->userflags & IB_RECT_INVALID)) ) {
+		
+//		if(ima && ima->source == IMA_SRC_VIEWER)
+//		{
+//			ColorSpace* cs = BCM_get_scene_linear_colorspace();
+//			ibuf->profile = cs->index;
+//		}
+		
+//		IMB_rect_from_float(ibuf);
+//	}
+//}
 
 static void draw_render_info(Scene *scene, Image *ima, ARegion *ar)
 {
@@ -503,7 +503,6 @@ static void sima_draw_zbuffloat_pixels(Scene *scene, float x1, float y1, int rec
 static void draw_image_buffer(SpaceImage *sima, ARegion *ar, Scene *scene, Image *ima, ImBuf *ibuf, float fx, float fy, float zoomx, float zoomy)
 {
 	int x, y;
-	int color_manage = scene->r.color_mgt_flag & R_COLOR_MANAGEMENT;
 
 	/* set zoom */
 	glPixelZoom(zoomx, zoomy);
@@ -535,15 +534,12 @@ static void draw_image_buffer(SpaceImage *sima, ARegion *ar, Scene *scene, Image
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 
-		/* we don't draw floats buffers directly but
-		 * convert them, and optionally apply curves */
-		image_verify_buffer_float(ima, ibuf, color_manage);
-
+		
 		if(ibuf->rect)
 			glaDrawPixelsSafe(x, y, ibuf->x, ibuf->y, ibuf->x, GL_RGBA, GL_UNSIGNED_BYTE, ibuf->rect);
-		/*else
+		/*if(ibuf->rect_float)
 			glaDrawPixelsSafe(x, y, ibuf->x, ibuf->y, ibuf->x, GL_RGBA, GL_FLOAT, ibuf->rect_float);*/
-		
+			
 		if(sima->flag & SI_USE_ALPHA)
 			glDisable(GL_BLEND);
 	}
@@ -578,7 +574,6 @@ static void draw_image_buffer_tiled(SpaceImage *sima, ARegion *ar, Scene *scene,
 {
 	unsigned int *rect;
 	int dx, dy, sx, sy, x, y;
-	int color_manage = scene->r.color_mgt_flag & R_COLOR_MANAGEMENT;
 
 	/* verify valid values, just leave this a while */
 	if(ima->xrep<1) return;
@@ -590,7 +585,7 @@ static void draw_image_buffer_tiled(SpaceImage *sima, ARegion *ar, Scene *scene,
 		sima->curtile = ima->xrep*ima->yrep - 1; 
 	
 	/* create char buffer from float if needed */
-	image_verify_buffer_float(ima, ibuf, color_manage);
+//	image_verify_buffer_float(ima, ibuf);
 
 	/* retrieve part of image buffer */
 	dx= ibuf->x/ima->xrep;
@@ -769,10 +764,8 @@ static void draw_image_paint_helpers(ARegion *ar, Scene *scene, float zoomx, flo
 void draw_image_main(SpaceImage *sima, ARegion *ar, Scene *scene)
 {
 	Image *ima;
-	ImBuf *ibuf;
 	float zoomx, zoomy;
 	int show_viewer, show_render;
-	void *lock;
 
 	/* XXX can we do this in refresh? */
 #if 0
@@ -797,21 +790,20 @@ void draw_image_main(SpaceImage *sima, ARegion *ar, Scene *scene)
 	/* retrieve the image and information about it */
 	ima= ED_space_image(sima);
 	ED_space_image_zoom(sima, ar, &zoomx, &zoomy);
-	ibuf= ED_space_image_acquire_buffer(sima, &lock);
-
+	
 	show_viewer= (ima && ima->source == IMA_SRC_VIEWER);
 	show_render= (show_viewer && ima->type == IMA_TYPE_R_RESULT);
 
 	/* draw the image or grid */
-	if(ibuf==NULL)
+	if(sima->colormanaged_ibuf==NULL)
 		draw_image_grid(ar, zoomx, zoomy);
 	else if(sima->flag & SI_DRAW_TILE)
-		draw_image_buffer_repeated(sima, ar, scene, ima, ibuf, zoomx, zoomy);
+		draw_image_buffer_repeated(sima, ar, scene, ima, sima->colormanaged_ibuf, zoomx, zoomy);
 	else if(ima && (ima->tpageflag & IMA_TILES))
-		draw_image_buffer_tiled(sima, ar, scene, ima, ibuf, 0.0f, 0.0, zoomx, zoomy);
+		draw_image_buffer_tiled(sima, ar, scene, ima, sima->colormanaged_ibuf, 0.0f, 0.0, zoomx, zoomy);
 	else
-		draw_image_buffer(sima, ar, scene, ima, ibuf, 0.0f, 0.0f, zoomx, zoomy);
-
+		draw_image_buffer(sima, ar, scene, ima, sima->colormanaged_ibuf, 0.0f, 0.0f, zoomx, zoomy);
+	
 	/* paint helpers */
 	if(sima->flag & SI_DRAWTOOL)
 		draw_image_paint_helpers(ar, scene, zoomx, zoomy);
@@ -833,8 +825,6 @@ void draw_image_main(SpaceImage *sima, ARegion *ar, Scene *scene)
 		}
 	}
 #endif
-
-	ED_space_image_release_buffer(sima, lock);
 
 	/* render info */
 	if(ima && show_render)

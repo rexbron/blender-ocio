@@ -347,7 +347,9 @@ ImBuf* IMB_thumb_create(const char* path, ThumbSize size, ThumbSource source, Im
 			/* save some time by only scaling byte buf */
 			if(img->rect_float) {
 				if(img->rect == NULL) {
-					IMB_rect_from_float(img);
+/* OCIO TODO: use defaut srgb->linear conversion (colormanagement is not available here) ??  */
+/* bad level calls might works :( */
+					IMB_rect_from_float_simple(img);
 				}
 
 				imb_freerectfloatImBuf(img);

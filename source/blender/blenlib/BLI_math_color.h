@@ -74,6 +74,7 @@ unsigned char rgb_to_grayscale_byte(unsigned char rgb[3]);
 
 /***************** Profile Transformations ********************/
 
+/* Do not use those functions for colormanagement. See BKE_colormanagement.h instead */
 void gamma_correct(float *c, float gamma);
 float rec709_to_linearrgb(float c);
 float linearrgb_to_rec709(float c);
@@ -82,11 +83,6 @@ float linearrgb_to_srgb(float c);
 void srgb_to_linearrgb_v3_v3(float *col_to, float *col_from);
 void linearrgb_to_srgb_v3_v3(float *col_to, float *col_from);
 
-/* rgba buffer convenience functions */
-void srgb_to_linearrgb_rgba_buf(float *col, int tot);
-void linearrgb_to_srgb_rgba_buf(float *col, int tot);
-void srgb_to_linearrgb_rgba_rgba_buf(float *col_to, float *col_from, int tot);
-void linearrgb_to_srgb_rgba_rgba_buf(float *col_to, float *col_from, int tot);
 	
 /************************** Other *************************/
 

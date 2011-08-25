@@ -34,6 +34,7 @@
 
 #include "../CMP_util.h"
 
+#include "BKE_colormanagement.h"
 
 /* **************** LEVELS ******************** */
 static bNodeSocketType cmp_node_view_levels_in[]= {

@@ -49,6 +49,7 @@
 #include "BKE_image.h"
 #include "BKE_main.h"
 #include "BKE_modifier.h"
+#include "BKE_colormanagement.h"
 
 #include "smoke_API.h"
 

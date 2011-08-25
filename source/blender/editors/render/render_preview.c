@@ -77,6 +77,7 @@
 #include "BKE_object.h"
 #include "BKE_texture.h"
 #include "BKE_world.h"
+#include "BKE_colormanagement.h"
 
 #include "IMB_imbuf.h"
 #include "IMB_imbuf_types.h"
@@ -444,17 +445,21 @@ static Scene *preview_prepare_scene(Scene *scene, ID *id, int id_type, ShaderPre
 
 /* new UI convention: draw is in pixel space already. */
 /* uses ROUNDBOX button in block to get the rect */
-static int ed_preview_draw_rect(ScrArea *sa, Scene *sce, ID *id, int split, int first, rcti *rect, rcti *newrect)
+static int ed_preview_draw_rect(ScrArea *sa, wmWindow *win, ID *id, int split, int first, rcti *rect, rcti *newrect)
 {
 	Render *re;
 	RenderResult rres;
 	char name[32];
-	int do_gamma_correct=0;
+	const char * gamma_correct_profile=0;
 	int offx=0, newx= rect->xmax-rect->xmin, newy= rect->ymax-rect->ymin;
 
 	if (id && GS(id->name) != ID_TE) {
 		/* exception: don't color manage texture previews - show the raw values */
-		if (sce) do_gamma_correct = sce->r.color_mgt_flag & R_COLOR_MANAGEMENT;
+		if (win){
+			/* OCIO TODO use default view od display (from wmWindow)*/
+			ColorSpace* cs = BCM_get_color_picking_colorspace();
+			gamma_correct_profile = cs->name;
+		}
 	}
 
 	if(!split || first) sprintf(name, "Preview %p", (void *)sa);
@@ -480,7 +485,7 @@ static int ed_preview_draw_rect(ScrArea *sa, Scene *sce, ID *id, int split, int 
 			newrect->xmax= MAX2(newrect->xmax, rect->xmin + rres.rectx + offx);
 			newrect->ymax= MAX2(newrect->ymax, rect->ymin + rres.recty);
 
-			glaDrawPixelsSafe_to32(rect->xmin+offx, rect->ymin, rres.rectx, rres.recty, rres.rectx, rres.rectf, do_gamma_correct);
+			glaDrawPixelsSafe_to32(rect->xmin+offx, rect->ymin, rres.rectx, rres.recty, rres.rectx, rres.rectf, gamma_correct_profile);
 
 			RE_ReleaseResultImage(re);
 			return 1;

@@ -439,7 +439,7 @@ static void rna_RegionView3D_view_matrix_set(PointerRNA *ptr, const float *value
 static int rna_SpaceImageEditor_cmview_getf(PointerRNA *ptr)
 {
 	SpaceImage *sima= (SpaceImage*)(ptr->data);
-	ColorManagedView* cv = cmGetViewFromName(sima->colormanaged_display, sima->colormanaged_view);
+	ColorManagedView* cv = BCM_get_view_from_name(sima->colormanaged_display, sima->colormanaged_view);
 	if(cv)
 		return cv->index;
 	return 0;
@@ -448,22 +448,31 @@ static int rna_SpaceImageEditor_cmview_getf(PointerRNA *ptr)
 static void rna_SpaceImageEditor_cmview_setf(PointerRNA *ptr, int value)
 {
 	SpaceImage *sima= (SpaceImage*)(ptr->data);
-	ColorManagedView* cv = cmGetViewFromIndex(value);
+	ColorManagedView* cv = BCM_get_view_from_index(value);
 	if(cv)
 	{
-		ColorManagedDisplay* cd = cmGetDisplayFromIndex(cv->parent_display_index);
-		BLI_strncpy(sima->colormanaged_view, cv->view_name, 32);
+		ColorManagedDisplay* cd = BCM_get_display_from_index(cv->parent_display_index);
 		if(cd)
+		{
+			BLI_strncpy(sima->colormanaged_view, cv->view_name, 32);
 			BLI_strncpy(sima->colormanaged_display, cd->display_name, 32);
+		}
 	}
 }
 
 static EnumPropertyItem* rna_SpaceImageEditor_cmview_itemf(bContext *C, PointerRNA *ptr, PropertyRNA *UNUSED(prop), int *free)
 {
 	wmWindow *w = CTX_wm_window(C);
-	ColorManagedDisplay* cd = cmGetDisplay(w->colormanaged_display);
+	ColorManagedDisplay* cd = BCM_get_display(w->colormanaged_display);
 	return cmGetViews(cd);
 }
+
+static void rna_SpaceImageEditor_cmview_update(Main *UNUSED(bmain), Scene *UNUSED(scene), PointerRNA *ptr)
+{
+	SpaceImage *sima= (SpaceImage*)ptr->data;
+	WM_main_add_notifier(NC_IMAGE, sima->image);
+}
+
 
 static PointerRNA rna_SpaceImageEditor_uvedit_get(PointerRNA *ptr)
 {
@@ -1588,7 +1597,7 @@ static void rna_def_space_image(BlenderRNA *brna)
 	RNA_def_property_enum_items(prop, colormanaged_views_items);
 	RNA_def_property_enum_funcs(prop, "rna_SpaceImageEditor_cmview_getf", "rna_SpaceImageEditor_cmview_setf", "rna_SpaceImageEditor_cmview_itemf");
 	RNA_def_property_ui_text(prop, "Colormanagement View", "Colormanaged view used for this screen.");
-	//RNA_def_property_update(prop, NC_SPACE|ND_SPACE_IMAGE, NULL);
+	RNA_def_property_update(prop, NC_SPACE|ND_SPACE_IMAGE, "rna_SpaceImageEditor_cmview_update");
 	
 	/* image */
 	prop= RNA_def_property(srna, "image", PROP_POINTER, PROP_NONE);

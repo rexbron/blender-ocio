@@ -55,6 +55,7 @@
 #include "BKE_sequencer.h"
 #include "BKE_screen.h"
 #include "BKE_scene.h"
+#include "BKE_colormanagement.h"
 
 #include "WM_api.h"
 #include "WM_types.h"

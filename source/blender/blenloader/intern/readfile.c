@@ -132,6 +132,7 @@
 #include "BKE_texture.h" // for open_plugin_tex
 #include "BKE_utildefines.h" // SWITCH_INT DATA ENDB DNA1 O_BINARY GLOB USER TEST REND
 #include "BKE_sound.h"
+#include "BKE_colormanagement.h"
 
 //XXX #include "BIF_butspace.h" // badlevel, for do_versions, patching event codes
 //XXX #include "BIF_filelist.h" // badlevel too, where to move this? - elubie

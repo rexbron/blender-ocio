@@ -503,19 +503,16 @@ static void rna_Window_screen_update(bContext *C, PointerRNA *ptr)
 static int rna_Window_display_getf(struct PointerRNA *ptr)
 {
 	wmWindow *w= (wmWindow*)ptr->data;
-	ColorManagedDisplay* cd = cmGetDisplay(w->colormanaged_display);
+	ColorManagedDisplay* cd = BCM_get_display(w->colormanaged_display);
 	if(cd)
 		return cd->index;
-	//cd = cmGetDefaultDisplay();
-	//if(cd)
-	//	return cd->index;
 	return 0;
 }
 
 static void rna_Window_display_setf(struct PointerRNA *ptr, int value)
 {
 	wmWindow *w= (wmWindow*)ptr->data;
-	ColorManagedDisplay* cd = cmGetDisplayFromIndex(value);
+	ColorManagedDisplay* cd = BCM_get_display_from_index(value);
 	if(cd)
 		BLI_strncpy(w->colormanaged_display, cd->display_name, 32);
 }

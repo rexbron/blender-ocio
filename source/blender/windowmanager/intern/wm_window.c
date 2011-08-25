@@ -232,6 +232,8 @@ wmWindow *wm_window_copy(bContext *C, wmWindow *winorig)
 	win->drawmethod= -1;
 	win->drawdata= NULL;
 	
+	BLI_strncpy(win->colormanaged_display, winorig->colormanaged_display, 32);
+	
 	return win;
 }
 

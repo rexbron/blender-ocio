@@ -53,6 +53,7 @@
 #include "BKE_image.h"
 #include "BKE_library.h"
 #include "BKE_main.h"
+#include "BKE_colormanagement.h"
 
 #include "CMP_node.h"
 #include "SHD_node.h"
@@ -1443,10 +1444,9 @@ void draw_nodespace_back_pix(ARegion *ar, SpaceNode *snode, int color_manage)
 			y = (ar->winy-snode->zoom*ibuf->y)/2 + snode->yof;
 			
 			if(!ibuf->rect) {
-				if(color_manage)
-					ibuf->profile = IB_PROFILE_LINEAR_RGB;
-				else
-					ibuf->profile = IB_PROFILE_NONE;
+				/* OCIO TODO use window display default view */
+				ColorSpace* cs = BCM_get_color_picking_colorspace();
+				ibuf->profile = cs->index;
 				IMB_rect_from_float(ibuf);
 			}
 

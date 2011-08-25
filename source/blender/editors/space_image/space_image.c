@@ -51,7 +51,9 @@
 #include "BKE_image.h"
 #include "BKE_mesh.h"
 #include "BKE_screen.h"
+#include "BKE_colormanagement.h"
 
+#include "IMB_imbuf.h"
 #include "IMB_imbuf_types.h"
 
 #include "ED_image.h"
@@ -434,6 +436,7 @@ static void image_free(SpaceLink *sl)
 	if(simage->cumap)
 		curvemapping_free(simage->cumap);
 	scopes_free(&simage->scopes);
+	IMB_freeImBuf(simage->colormanaged_ibuf);
 }
 
 
@@ -457,6 +460,8 @@ static SpaceLink *image_duplicate(SpaceLink *sl)
 
 	scopes_new(&simagen->scopes);
 
+	simagen->colormanaged_ibuf = IMB_dupImBuf(((SpaceImage*)sl)->colormanaged_ibuf);
+	
 	return (SpaceLink *)simagen;
 }
 
@@ -577,6 +582,8 @@ static void image_refresh(const bContext *C, ScrArea *UNUSED(sa))
 	SpaceImage *sima= CTX_wm_space_image(C);
 	Object *obedit= CTX_data_edit_object(C);
 	Image *ima;
+	ImBuf *ibuf;
+	void *lock;
 
 	ima= ED_space_image(sima);
 
@@ -606,6 +613,46 @@ static void image_refresh(const bContext *C, ScrArea *UNUSED(sa))
 
 		BKE_mesh_end_editmesh(obedit->data, em);
 	}
+	
+	/* update the colormanaged buffer */
+	ibuf = ED_space_image_acquire_buffer(sima, &lock);
+
+	if(ibuf)
+	{
+		if(ibuf->rect_float)
+		{
+			ColorManagedDisplay* display = BCM_get_display(sima->colormanaged_display);
+			ColorManagedView* view = BCM_get_view(display, sima->colormanaged_view);
+			
+			if(!sima->colormanaged_ibuf || !sima->colormanaged_ibuf->rect_float || sima->colormanaged_ibuf->x != ibuf->x || sima->colormanaged_ibuf->y != ibuf->y)
+			{
+				IMB_freeImBuf(sima->colormanaged_ibuf);
+				sima->colormanaged_ibuf = IMB_allocImBuf(ibuf->x, ibuf->y, 32, IB_rectfloat);
+			}
+			
+			memcpy(sima->colormanaged_ibuf->rect_float, ibuf->rect_float, ibuf->x * ibuf->y * sizeof(float) * 4);
+			BCM_apply_display_transform(sima->colormanaged_ibuf, display->display_name, view->view_name);
+			IMB_rect_from_float_simple(sima->colormanaged_ibuf);
+		}
+		else
+		{
+			if(!sima->colormanaged_ibuf || !sima->colormanaged_ibuf->rect || sima->colormanaged_ibuf->x != ibuf->x || sima->colormanaged_ibuf->y != ibuf->y)
+			{
+				IMB_freeImBuf(sima->colormanaged_ibuf);
+				sima->colormanaged_ibuf = IMB_allocImBuf(ibuf->x, ibuf->y, 32, IB_rect);
+			}
+			
+			memcpy(sima->colormanaged_ibuf->rect, ibuf->rect, ibuf->x * ibuf->y * sizeof(int));
+		}
+	}
+	else
+	{
+		IMB_freeImBuf(sima->colormanaged_ibuf);
+		sima->colormanaged_ibuf = 0;
+	}
+	
+	ED_space_image_release_buffer(sima, lock);
+	
 }
 
 static void image_listener(ScrArea *sa, wmNotifier *wmn)

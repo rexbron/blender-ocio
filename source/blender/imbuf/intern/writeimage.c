@@ -53,7 +53,8 @@ short IMB_saveiff(struct ImBuf *ibuf, const char *name, int flags)
 		if(type->save && type->ftype(type, ibuf)) {
 			if(!(type->flag & IM_FTYPE_FLOAT)) {
 				if(ibuf->rect==NULL && ibuf->rect_float)
-					IMB_rect_from_float(ibuf);
+					/* OCIO TODO */
+					IMB_rect_from_float_simple(ibuf);
 			}
 			/* TODO. have const char for image write funcs */
 			return type->save(ibuf, name, flags);

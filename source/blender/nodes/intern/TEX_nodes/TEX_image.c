@@ -35,6 +35,8 @@
 #include "../TEX_util.h"
 #include "TEX_node.h"
 
+#include "BKE_colormanagement.h"
+
 static bNodeSocketType outputs[]= {
 	{ SOCK_RGBA, 0, "Image",  0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},
 	{ -1, 0, "" }

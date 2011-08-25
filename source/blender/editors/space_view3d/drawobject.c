@@ -74,6 +74,7 @@
 #include "BKE_particle.h"
 #include "BKE_pointcache.h"
 #include "BKE_unit.h"
+#include "BKE_colormanagement.h"
 
 #include "smoke_API.h"
 

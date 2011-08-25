@@ -50,6 +50,7 @@
 #include "BKE_context.h"
 #include "BKE_global.h"
 #include "BKE_sequencer.h"
+#include "BKE_colormanagement.h"
 
 #include "BKE_sound.h"
 

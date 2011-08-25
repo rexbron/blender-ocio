@@ -61,6 +61,7 @@
 #include "BKE_paint.h"
 #include "BKE_texture.h"
 #include "BKE_icons.h"
+#include "BKE_colormanagement.h"
 
 #include "IMB_imbuf.h"
 #include "IMB_imbuf_types.h"

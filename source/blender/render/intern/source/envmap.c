@@ -54,6 +54,7 @@
 #include "BKE_main.h"
 #include "BKE_image.h"   // BKE_write_ibuf 
 #include "BKE_texture.h"
+#include "BKE_colormanagement.h"
 
 
 

@@ -38,8 +38,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OpenColorTypes.h"
 #include "OpenColorTransforms.h"
 
-using std::ptrdiff_t;
-
 /*!rst::
 C++ API
 =======

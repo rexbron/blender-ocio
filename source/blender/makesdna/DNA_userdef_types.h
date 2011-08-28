@@ -311,7 +311,6 @@ typedef struct ColorManagementOptions
 
 /* colormanagementoptions->flag */
 #define COLORMAN_UI_USE_WINDOW_CS (1<<0)
-#define COLORMAN_PREVIEW_USE_WINDOW_CS (1<<1)
 
 typedef struct UserDef {
 	int flag, dupflag;

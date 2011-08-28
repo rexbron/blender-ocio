@@ -410,6 +410,14 @@ ColorSpace* BCM_get_sequencer_colorspace(void)
 	return BCM_get_default_8bits_colorspace();
 }
 
+ColorSpace* BCM_get_ui_colorspace(struct wmWindow *window)
+{
+	if(U.colormanagement_options.flag & COLORMAN_UI_USE_WINDOW_CS)
+		return BCM_get_colorspace(window->colormanaged_display);
+	else
+		return BCM_get_color_picking_colorspace();
+}
+
 ColorManagedDisplay* BCM_get_display(const char* name)
 {
 	if( strcmp(name, "") == 0)

@@ -895,6 +895,9 @@ class USERPREF_PT_colormanagement(bpy.types.Panel):
         col.prop(cm, "default_16bits_colorspace")
         col.prop(cm, "default_log_colorspace")
         col.prop(cm, "default_float_colorspace")
+        
+        col = split.column()
+        col.prop(cm, "use_display_default_view_for_ui")
 
 class USERPREF_MT_addons_dev_guides(Menu):
     bl_label = "Development Guides"

@@ -1416,7 +1416,7 @@ void ED_init_node_butfuncs(void)
 
 /* ************** Generic drawing ************** */
 
-void draw_nodespace_back_pix(ARegion *ar, SpaceNode *snode, int color_manage)
+void draw_nodespace_back_pix(struct wmWindow *window, ARegion *ar, SpaceNode *snode)
 {
 	
 	if((snode->flag & SNODE_BACKDRAW) && snode->treetype==NTREE_COMPOSIT) {
@@ -1444,8 +1444,7 @@ void draw_nodespace_back_pix(ARegion *ar, SpaceNode *snode, int color_manage)
 			y = (ar->winy-snode->zoom*ibuf->y)/2 + snode->yof;
 			
 			if(!ibuf->rect) {
-				/* OCIO TODO use window display default view */
-				ColorSpace* cs = BCM_get_color_picking_colorspace();
+				ColorSpace* cs = BCM_get_ui_colorspace(window);
 				ibuf->profile = cs->index;
 				IMB_rect_from_float(ibuf);
 			}

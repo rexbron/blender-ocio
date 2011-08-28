@@ -1161,7 +1161,7 @@ typedef struct ImageSampleInfo {
 	void *draw_handle;
 	int x, y;
 	int channels;
-	int color_manage;
+	int color_manage; /* Deprecated OCIO TODO */
 
 	char col[4];
 	float colf[4];

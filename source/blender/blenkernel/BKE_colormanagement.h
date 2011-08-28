@@ -8,6 +8,7 @@
 
 struct EnumPropertyItem;
 struct ImBuf;
+struct wmWindow;
 
 void BCM_init(void);
 void BCM_exit(void);
@@ -23,6 +24,7 @@ ColorSpace* BCM_get_scene_linear_colorspace(void);
 ColorSpace* BCM_get_color_picking_colorspace(void);
 ColorSpace* BCM_get_texture_paint_colorspace(void);
 ColorSpace* BCM_get_sequencer_colorspace(void);
+ColorSpace* BCM_get_ui_colorspace(struct wmWindow* window);
 
 ColorManagedDisplay* BCM_get_display(const char* name);
 ColorManagedDisplay* BCM_get_display_from_index(int index);

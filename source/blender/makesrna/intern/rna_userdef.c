@@ -3082,6 +3082,10 @@ void rna_def_userdef_color_management(BlenderRNA *brna)
 	RNA_def_property_enum_items(prop, userdef_colorspace_items);
 	RNA_def_property_enum_funcs(prop, "rna_userdef_colorspace_float_getf", "rna_userdef_colorspace_float_setf", "rna_userdef_colorspace_itemf");
 	RNA_def_property_ui_text(prop, "Default float", "Default color-space for float images");
+	
+	prop= RNA_def_property(srna, "use_display_default_view_for_ui", PROP_BOOLEAN, PROP_NONE);
+	RNA_def_property_boolean_sdna(prop, NULL, "flag", COLORMAN_UI_USE_WINDOW_CS);
+	RNA_def_property_ui_text(prop, "Use display's default view for UI", "UI element use the default view colorspace of the display assigned to the current window. Otherwise use the \"color_picking\" role.");
 }
 
 void RNA_def_userdef(BlenderRNA *brna)

@@ -323,6 +323,16 @@ int imb_get_anim_type(const char *name);
 
 /**
  *
+ * @attention Defined in util.c
+ */
+#define IB_FAMILY_8BITS		0
+#define IB_FAMILY_16BITS	1
+#define IB_FAMILY_LOG		2
+#define IB_FAMILY_FLOAT		3
+int IMB_get_family(struct ImBuf *ibuf);
+
+/**
+ *
  * @attention Defined in divers.c
  */
 void IMB_de_interlace(struct ImBuf *ibuf);

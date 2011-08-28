@@ -15,7 +15,7 @@ void BCM_exit(void);
 
 ColorSpace* BCM_get_colorspace(const char* name);
 ColorSpace* BCM_get_colorspace_from_index(int index);
-ColorSpace* BCM_get_default_colorspace_from_imbuf_ftype(int ftype);
+ColorSpace* BCM_get_default_imbuf_colorspace(struct ImBuf* ibuf);
 ColorSpace* BCM_get_default_8bits_colorspace(void);
 ColorSpace* BCM_get_default_16bits_colorspace(void);
 ColorSpace* BCM_get_default_log_colorspace(void);
@@ -55,7 +55,7 @@ void IMB_partial_rect_from_float(struct ImBuf *ibuf, float *buffer, int x, int y
 
 
 /* RNA helpers */
-void BCM_add_colorspaces_items(struct EnumPropertyItem** items, int* totitem, int add_default, int default_ftype);
+void BCM_add_colorspaces_items(struct EnumPropertyItem** items, int* totitem, int add_default, struct ImBuf *ibuf);
 /* OCIO TODO */
 struct EnumPropertyItem* cmGetDisplays(void);
 struct EnumPropertyItem* cmGetViews(ColorManagedDisplay* display);

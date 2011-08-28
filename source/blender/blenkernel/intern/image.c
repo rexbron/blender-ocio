@@ -1632,7 +1632,7 @@ static void image_apply_colormanagement_after_load(Image *ima, ImBuf *ibuf)
 		}
 		/* default colorspace according to image bith depth */
 		/* 8bit, 16bit, log, float*/
-		colorspace = BCM_get_default_colorspace_from_imbuf_ftype(ibuf->ftype);
+		colorspace = BCM_get_default_imbuf_colorspace(ibuf);
 	}
 	if(colorspace)
 		ibuf->profile = colorspace->index;

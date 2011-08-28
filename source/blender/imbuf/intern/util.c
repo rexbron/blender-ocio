@@ -398,3 +398,40 @@ int IMB_isanim(const char *filename) {
 	
 	return (type && type!=ANIM_SEQUENCE);
 }
+
+int IMB_get_family(struct ImBuf *ibuf)
+{
+/* OCIO TODO more file types here*/
+	
+	if(ibuf)
+	{
+		/* Log  */
+#ifdef WITH_CINEOND
+		if(ibuf->ftype & CINEON || ibuf->ftype & DPX )
+			return IB_FAMILY_LOG;
+#endif
+		
+		/* Floats */
+		if(ibuf->ftype & OPENEXR)
+			return IB_FAMILY_FLOAT;
+		
+		/* 16 Bits */
+#ifdef WITH_TIFF
+		if(ibuf->ftype & TIF && ibuf->ftype & TIF_16BIT)
+			return IB_FAMILY_16BITS;
+#endif
+		
+		/* 8 Bits */
+		if(ibuf->ftype & PNG || ibuf->ftype & TGA || ibuf->ftype & JPG || ibuf->ftype & BMP)
+			return IB_FAMILY_8BITS;
+#ifdef WITH_DDS
+		if(ibuf->ftype & DDS)
+			return IB_FAMILY_8BITS;
+#endif
+#ifdef WITH_QUICKTIME
+		if(ibuf->ftype & QUICKTIME)
+			return IB_FAMILY_8BITS;
+#endif
+	}	
+	return IB_FAMILY_8BITS;
+}

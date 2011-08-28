@@ -87,7 +87,7 @@ static EnumPropertyItem* rna_Image_colorspace_itemf(bContext *C, PointerRNA *ptr
 	
 	ibuf= BKE_image_acquire_ibuf(ima, NULL, &lock);
 	
-	BCM_add_colorspaces_items(&items, &totitem, 1, ibuf->ftype);
+	BCM_add_colorspaces_items(&items, &totitem, 1, ibuf);
 	RNA_enum_item_end(&items, &totitem);
 	
 	*free = 1;

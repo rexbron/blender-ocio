@@ -38,9 +38,9 @@ void cmLoadConfig(ConstConfigRcPtr* config)
 	int nrColorSpaces, nrDisplays, nrViews, index, viewindex, viewindex2;
 	const char* name;
 	const char* family;
-	const char* role_lin;
-	const char* role_picker;
-	const char* role_texture;
+	const char* role_lin=0;
+	const char* role_picker=0;
+	const char* role_texture=0;
 	ConstColorSpaceRcPtr* ociocs;
 	
 	OCIO_setCurrentConfig(config);
@@ -96,13 +96,13 @@ void cmLoadConfig(ConstConfigRcPtr* config)
 		
 		colorSpace->flag=0;
 		
-		if(strcmp(name, role_lin)==0)
+		if(role_lin && strcmp(name, role_lin)==0)
 			colorSpace->flag |= COLORSPACE_IS_SCENE_LINEAR;
 			
-		if(strcmp(name, role_picker)==0)
+		if(role_picker && strcmp(name, role_picker)==0)
 			colorSpace->flag |= COLORSPACE_IS_COLOR_PICKING;
 			
-		if(strcmp(name, role_texture)==0)
+		if(role_texture && strcmp(name, role_texture)==0)
 			colorSpace->flag |= COLORSPACE_IS_TEXTURE_PAINT;
 		
 		BLI_addtail(&G.colorspaces, colorSpace);
@@ -315,38 +315,20 @@ ColorSpace* BCM_get_colorspace_from_index(int index)
 	return 0;
 }
 
-ColorSpace* BCM_get_default_colorspace_from_imbuf_ftype(int ftype)
+ColorSpace* BCM_get_default_imbuf_colorspace(struct ImBuf *ibuf)
 {
-/* OCIO TODO more file types here*/
-
-	/* Log  */
-#ifdef WITH_CINEOND
-	if(ftype & CINEON || ftype & DPX )
-		return BCM_get_default_log_colorspace()
-#endif
-
-	/* Floats */
-	if(ftype & OPENEXR)
-		return BCM_get_default_float_colorspace();
-		
-	/* 16 Bits */
-#ifdef WITH_TIFF
-	if(ftype & TIF && ftype & TIF_16BIT)
-		return BCM_get_default_16bits_colorspace();
-#endif
+	int family = IMB_get_family(ibuf);
 	
-	/* 8 Bits */
-	if(ftype & PNG || ftype & TGA || ftype & JPG || ftype & BMP)
+	switch(family) {
+	case IB_FAMILY_8BITS :
 		return BCM_get_default_8bits_colorspace();
-#ifdef WITH_DDS
-	if(ftype & DDS)
-		return BCM_get_default_8bits_colorspace();
-#endif
-#ifdef WITH_QUICKTIME
-	if(ftype & QUICKTIME)
-		return BCM_get_default_8bits_colorspace();
-#endif
-		
+	case IB_FAMILY_16BITS :
+		return BCM_get_default_16bits_colorspace();
+	case IB_FAMILY_LOG :
+		return BCM_get_default_log_colorspace();
+	case IB_FAMILY_FLOAT :
+		return BCM_get_default_float_colorspace();
+	}
 	return 0;
 }
 
@@ -807,24 +789,71 @@ void IMB_convert_profile(struct ImBuf *ibuf, const ColorSpace* profile)
 
 /* RNA helpers */
 /***********************************/
-void BCM_add_colorspaces_items(EnumPropertyItem** items, int* totitem, int add_default, int default_ftype)
+#define COLORMAN_DEFAULT_SHOWN
+void BCM_add_colorspaces_items(EnumPropertyItem** items, int* totitem, int add_default, struct ImBuf *ibuf)
 {
+#ifdef COLORMAN_DEFAULT_SHOWN 
+	/* needs to be static (or global or always allocated at the same place) */
+	static char def8name[COLORMAN_MAX_COLORSPACE+16];
+	static char def16name[COLORMAN_MAX_COLORSPACE+16];
+	static char deflogname[COLORMAN_MAX_COLORSPACE+16];
+	static char deffloatname[COLORMAN_MAX_COLORSPACE+16];
+#endif
+
 	ColorSpace* cs;
 	
 	if(add_default)
 	{	
 		EnumPropertyItem item;
-		/*char name[COLORMAN_MAX_COLORSPACE+16];
 		
-		cs = BCM_get_default_colorspace_from_imbuf_ftype(default_ftype);
+#ifdef COLORMAN_DEFAULT_SHOWN
+		int family = IMB_get_family(ibuf);
+		
+		cs = BCM_get_default_8bits_colorspace();
 		if(cs)
-			BLI_snprintf(name, COLORMAN_MAX_COLORSPACE+15, "default(%s)", cs->name);
+			BLI_snprintf(def8name, COLORMAN_MAX_COLORSPACE+15, "default(%s)", cs->name);
 		else
-			BLI_strncpy(name, "default(none)", COLORMAN_MAX_COLORSPACE+15);*/
+			BLI_strncpy(def8name, "default(none)", COLORMAN_MAX_COLORSPACE+15);
 			
-		item.value = 0;
-		/*item.name = name;*/
+		cs = BCM_get_default_16bits_colorspace();
+		if(cs)
+			BLI_snprintf(def16name, COLORMAN_MAX_COLORSPACE+15, "default(%s)", cs->name);
+		else
+			BLI_strncpy(def16name, "default(none)", COLORMAN_MAX_COLORSPACE+15);
+		
+		cs = BCM_get_default_log_colorspace();
+		if(cs)
+			BLI_snprintf(deflogname, COLORMAN_MAX_COLORSPACE+15, "default(%s)", cs->name);
+		else
+			BLI_strncpy(deflogname, "default(none)", COLORMAN_MAX_COLORSPACE+15);
+		
+		cs = BCM_get_default_float_colorspace();
+		if(cs)
+			BLI_snprintf(deffloatname, COLORMAN_MAX_COLORSPACE+15, "default(%s)", cs->name);
+		else
+			BLI_strncpy(deffloatname, "default(none)", COLORMAN_MAX_COLORSPACE+15);
+		
+		switch(family) {
+		case IB_FAMILY_8BITS :
+			item.name = def8name;
+			break;
+		case IB_FAMILY_16BITS :
+			item.name = def16name;
+			break;
+		case IB_FAMILY_LOG :
+			item.name = deflogname;
+			break;
+		case IB_FAMILY_FLOAT :
+			item.name = deffloatname;
+			break;
+		default:
+			item.name = "default(none)";
+		}
+#else
 		item.name = "default";
+#endif
+		
+		item.value = 0;
 		item.identifier = "default";
 		item.icon = 0;
 		item.description = "Use the default colorspace for this image";

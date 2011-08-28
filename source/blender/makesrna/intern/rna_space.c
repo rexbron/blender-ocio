@@ -454,8 +454,8 @@ static void rna_SpaceImageEditor_cmview_setf(PointerRNA *ptr, int value)
 		ColorManagedDisplay* cd = BCM_get_display_from_index(cv->parent_display_index);
 		if(cd)
 		{
-			BLI_strncpy(sima->colormanaged_view, cv->view_name, 32);
-			BLI_strncpy(sima->colormanaged_display, cd->display_name, 32);
+			BLI_strncpy(sima->colormanaged_view, cv->view_name, COLORMAN_MAX_VIEW);
+			BLI_strncpy(sima->colormanaged_display, cd->display_name, COLORMAN_MAX_DISPLAY);
 		}
 	}
 }

@@ -90,8 +90,8 @@ void cmLoadConfig(ConstConfigRcPtr* config)
 		colorSpace = MEM_mallocN(sizeof(ColorSpace), "ColorSpace");
 		colorSpace->index = index+1;
 		
-		BLI_strncpy(colorSpace->name, name, 32);
-		BLI_strncpy(colorSpace->family, family, 32);
+		BLI_strncpy(colorSpace->name, name, COLORMAN_MAX_COLORSPACE);
+		BLI_strncpy(colorSpace->family, family, COLORMAN_MAX_FAMILY);
 		
 		colorSpace->flag=0;
 		
@@ -124,7 +124,7 @@ void cmLoadConfig(ConstConfigRcPtr* config)
 		display->views.last = NULL;
 		
 		display->index = index+1;
-		BLI_strncpy(display->display_name, displayname, 32);
+		BLI_strncpy(display->display_name, displayname, COLORMAN_MAX_DISPLAY);
 		BLI_addtail(&G.color_managed_displays, display);
 		
 		
@@ -141,8 +141,8 @@ void cmLoadConfig(ConstConfigRcPtr* config)
 			view = MEM_mallocN(sizeof(ColorManagedView), "ColorManagedView");
 			view->index = viewindex2+1;
 			view->parent_display_index = display->index;
-			BLI_strncpy(view->view_name, viewname, 32);
-			BLI_strncpy(view->colorspace_name, name, 32);
+			BLI_strncpy(view->view_name, viewname, COLORMAN_MAX_VIEW);
+			BLI_strncpy(view->colorspace_name, name, COLORMAN_MAX_COLORSPACE);
 			
 			BLI_addtail(&display->views, view);
 		}
@@ -193,7 +193,7 @@ void cmCheckConfigUse()
 			{
 				display = BCM_get_default_display();
 				printf("Blender color management: Window display \"%s\" not found, setting default \"%s\".\n", w->colormanaged_display, display->display_name);
-				BLI_strncpy(w->colormanaged_display, display->display_name, 32);
+				BLI_strncpy(w->colormanaged_display, display->display_name, COLORMAN_MAX_DISPLAY);
 			}
 			w = w->next;
 		}
@@ -215,7 +215,7 @@ void cmCheckConfigUse()
 						{
 							display = BCM_get_default_display();
 							printf("Blender color management: Window display \"%s\" not found, setting default \"%s\".\n", sima->colormanaged_display, display->display_name);
-							BLI_strncpy(sima->colormanaged_display, display->display_name, 32);
+							BLI_strncpy(sima->colormanaged_display, display->display_name, COLORMAN_MAX_DISPLAY);
 						}
 						;
 						ColorManagedView* view = BCM_get_view(display, sima->colormanaged_view);
@@ -223,7 +223,7 @@ void cmCheckConfigUse()
 						{
 							view = BCM_get_default_view(display);
 							printf("Blender color management: Image viewer view \"%s\" not found, setting default \"%s\".\n", sima->colormanaged_view, view->view_name);
-							BLI_strncpy(sima->colormanaged_view, view->view_name, 32);
+							BLI_strncpy(sima->colormanaged_view, view->view_name, COLORMAN_MAX_VIEW);
 						}
 					}
 				}

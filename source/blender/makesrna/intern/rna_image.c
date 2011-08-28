@@ -72,9 +72,9 @@ static void rna_Image_colorspace_setf(struct PointerRNA *ptr, int value)
 	Image* ima= (Image*)ptr->data;
 	ColorSpace* cs = BCM_get_colorspace_from_index(value);
 	if(cs)
-		BLI_strncpy(ima->colorspace, cs->name, 32);
+		BLI_strncpy(ima->colorspace, cs->name, COLORMAN_MAX_COLORSPACE);
 	else
-		BLI_strncpy(ima->colorspace, "", 32);
+		BLI_strncpy(ima->colorspace, "", COLORMAN_MAX_COLORSPACE);
 }
 
 static EnumPropertyItem* rna_Image_colorspace_itemf(bContext *C, PointerRNA *ptr, PropertyRNA *UNUSED(prop), int *free)

@@ -146,6 +146,10 @@ typedef struct Scopes {
 #define SCOPES_WAVEFRM_YCC_709	3
 #define SCOPES_WAVEFRM_YCC_JPEG	4
 
+#define COLORMAN_MAX_COLORSPACE	32
+#define COLORMAN_MAX_FAMILY		32
+#define COLORMAN_MAX_DISPLAY	32
+#define COLORMAN_MAX_VIEW		32
 
 typedef struct ColorSpace {
 	struct ColorSpace *next, *prev;

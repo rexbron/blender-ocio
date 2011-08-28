@@ -310,9 +310,9 @@ static void rna_userdef_colorspace_8bits_setf(struct PointerRNA *ptr, int value)
 	ColorManagementOptions* cmo= (ColorManagementOptions*)ptr->data;
 	ColorSpace* cs = BCM_get_colorspace_from_index(value);
 	if(cs)
-		BLI_strncpy(cmo->default_8bits, cs->name, 32);
+		BLI_strncpy(cmo->default_8bits, cs->name, COLORMAN_MAX_COLORSPACE);
 	else
-		BLI_strncpy(cmo->default_8bits, "", 32);
+		BLI_strncpy(cmo->default_8bits, "", COLORMAN_MAX_COLORSPACE);
 }
 
 static int rna_userdef_colorspace_16bits_getf(struct PointerRNA *ptr)
@@ -329,9 +329,9 @@ static void rna_userdef_colorspace_16bits_setf(struct PointerRNA *ptr, int value
 	ColorManagementOptions* cmo= (ColorManagementOptions*)ptr->data;
 	ColorSpace* cs = BCM_get_colorspace_from_index(value);
 	if(cs)
-		BLI_strncpy(cmo->default_16bits, cs->name, 32);
+		BLI_strncpy(cmo->default_16bits, cs->name, COLORMAN_MAX_COLORSPACE);
 	else
-		BLI_strncpy(cmo->default_16bits, "", 32);
+		BLI_strncpy(cmo->default_16bits, "", COLORMAN_MAX_COLORSPACE);
 }
 
 static int rna_userdef_colorspace_log_getf(struct PointerRNA *ptr)
@@ -348,9 +348,9 @@ static void rna_userdef_colorspace_log_setf(struct PointerRNA *ptr, int value)
 	ColorManagementOptions* cmo= (ColorManagementOptions*)ptr->data;
 	ColorSpace* cs = BCM_get_colorspace_from_index(value);
 	if(cs)
-		BLI_strncpy(cmo->default_log, cs->name, 32);
+		BLI_strncpy(cmo->default_log, cs->name, COLORMAN_MAX_COLORSPACE);
 	else
-		BLI_strncpy(cmo->default_log, "", 32);
+		BLI_strncpy(cmo->default_log, "", COLORMAN_MAX_COLORSPACE);
 }
 
 static int rna_userdef_colorspace_float_getf(struct PointerRNA *ptr)
@@ -367,9 +367,9 @@ static void rna_userdef_colorspace_float_setf(struct PointerRNA *ptr, int value)
 	ColorManagementOptions* cmo= (ColorManagementOptions*)ptr->data;
 	ColorSpace* cs = BCM_get_colorspace_from_index(value);
 	if(cs)
-		BLI_strncpy(cmo->default_float, cs->name, 32);
+		BLI_strncpy(cmo->default_float, cs->name, COLORMAN_MAX_COLORSPACE);
 	else
-		BLI_strncpy(cmo->default_float, "", 32);
+		BLI_strncpy(cmo->default_float, "", COLORMAN_MAX_COLORSPACE);
 }
 
 static EnumPropertyItem* rna_userdef_colorspace_itemf(bContext *C, PointerRNA *ptr, PropertyRNA *UNUSED(prop), int *free)

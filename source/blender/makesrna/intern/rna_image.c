@@ -79,13 +79,20 @@ static void rna_Image_colorspace_setf(struct PointerRNA *ptr, int value)
 
 static EnumPropertyItem* rna_Image_colorspace_itemf(bContext *C, PointerRNA *ptr, PropertyRNA *UNUSED(prop), int *free)
 {
+	Image* ima= (Image*)ptr->data;
+	ImBuf *ibuf;
+	void *lock;
 	EnumPropertyItem *items = NULL;
 	int totitem = 0;
 	
-	BCM_add_colorspaces_items(&items, &totitem, 1);
+	ibuf= BKE_image_acquire_ibuf(ima, NULL, &lock);
+	
+	BCM_add_colorspaces_items(&items, &totitem, 1, ibuf->ftype);
 	RNA_enum_item_end(&items, &totitem);
 	
 	*free = 1;
+	
+	BKE_image_release_ibuf(ima, lock);
 	
 	return items;
 }

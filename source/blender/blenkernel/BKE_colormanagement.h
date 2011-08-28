@@ -55,7 +55,7 @@ void IMB_partial_rect_from_float(struct ImBuf *ibuf, float *buffer, int x, int y
 
 
 /* RNA helpers */
-void BCM_add_colorspaces_items(struct EnumPropertyItem** items, int* totitem, int add_default);
+void BCM_add_colorspaces_items(struct EnumPropertyItem** items, int* totitem, int add_default, int default_ftype);
 /* OCIO TODO */
 struct EnumPropertyItem* cmGetDisplays(void);
 struct EnumPropertyItem* cmGetViews(ColorManagedDisplay* display);

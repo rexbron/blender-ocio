@@ -8,6 +8,7 @@
 #include "DNA_userdef_types.h"
 #include "DNA_screen_types.h"
 #include "DNA_space_types.h"
+#include "DNA_color_types.h"
 
 #include "MEM_guardedalloc.h"
 
@@ -806,23 +807,32 @@ void IMB_convert_profile(struct ImBuf *ibuf, const ColorSpace* profile)
 
 /* RNA helpers */
 /***********************************/
-void BCM_add_colorspaces_items(EnumPropertyItem** items, int* totitem, int add_default)
+void BCM_add_colorspaces_items(EnumPropertyItem** items, int* totitem, int add_default, int default_ftype)
 {
-	ColorSpace* cs = G.colorspaces.first;
+	ColorSpace* cs;
 	
 	if(add_default)
 	{	
 		EnumPropertyItem item;
+		/*char name[COLORMAN_MAX_COLORSPACE+16];
 		
+		cs = BCM_get_default_colorspace_from_imbuf_ftype(default_ftype);
+		if(cs)
+			BLI_snprintf(name, COLORMAN_MAX_COLORSPACE+15, "default(%s)", cs->name);
+		else
+			BLI_strncpy(name, "default(none)", COLORMAN_MAX_COLORSPACE+15);*/
+			
 		item.value = 0;
-		item.name = "(default)";
-		item.identifier = "(default)";
+		/*item.name = name;*/
+		item.name = "default";
+		item.identifier = "default";
 		item.icon = 0;
 		item.description = "Use the default colorspace for this image";
 		
 		RNA_enum_item_add(items, totitem, &item);
 	}
 	
+	cs = G.colorspaces.first;
 	while(cs)
 	{
 		EnumPropertyItem item;

@@ -377,7 +377,7 @@ static EnumPropertyItem* rna_userdef_colorspace_itemf(bContext *C, PointerRNA *p
 	EnumPropertyItem *items = NULL;
 	int totitem = 0;
 	
-	BCM_add_colorspaces_items(&items, &totitem, 0);
+	BCM_add_colorspaces_items(&items, &totitem, 0, 0);
 	RNA_enum_item_end(&items, &totitem);
 	
 	*free = 1;

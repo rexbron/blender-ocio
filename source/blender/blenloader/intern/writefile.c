@@ -2151,8 +2151,6 @@ static void write_screens(WriteData *wd, ListBase *scrbase)
 					SpaceImage *sima= (SpaceImage *)sl;
 					
 					writestruct(wd, DATA, "SpaceImage", 1, sl);
-					if(sima->cumap)
-						write_curvemapping(wd, sima->cumap);
 				}
 				else if(sl->spacetype==SPACE_IMASEL) {
 					// XXX: depreceated... do we still want to keep this?

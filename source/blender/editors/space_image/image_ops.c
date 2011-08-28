@@ -1807,24 +1807,6 @@ static void sample_apply(bContext *C, wmOperator *op, wmEvent *event)
 			info->zfp= &info->zf;
 		}
 		
-		if(sima->cumap && ibuf->channels==4) {
-			/* we reuse this callback for set curves point operators */
-			if(RNA_struct_find_property(op->ptr, "point")) {
-				int point= RNA_enum_get(op->ptr, "point");
-
-				if(point == 1) {
-					curvemapping_set_black_white(sima->cumap, NULL, info->colfp);
-					if(ibuf->rect_float)
-						curvemapping_do_ibuf(sima->cumap, ibuf);
-				}
-				else if(point == 0) {
-					curvemapping_set_black_white(sima->cumap, info->colfp, NULL);
-					if(ibuf->rect_float)
-						curvemapping_do_ibuf(sima->cumap, ibuf);
-				}
-			}
-		}
-				
 		// XXX node curve integration ..
 #if 0
 		{

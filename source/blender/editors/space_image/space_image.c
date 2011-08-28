@@ -433,8 +433,6 @@ static void image_free(SpaceLink *sl)
 {	
 	SpaceImage *simage= (SpaceImage*) sl;
 	
-	if(simage->cumap)
-		curvemapping_free(simage->cumap);
 	scopes_free(&simage->scopes);
 	IMB_freeImBuf(simage->colormanaged_ibuf);
 }
@@ -454,10 +452,6 @@ static SpaceLink *image_duplicate(SpaceLink *sl)
 {
 	SpaceImage *simagen= MEM_dupallocN(sl);
 	
-	/* clear or remove stuff from old */
-	if(simagen->cumap)
-		simagen->cumap= curvemapping_copy(simagen->cumap);
-
 	scopes_new(&simagen->scopes);
 
 	simagen->colormanaged_ibuf = IMB_dupImBuf(((SpaceImage*)sl)->colormanaged_ibuf);

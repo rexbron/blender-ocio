@@ -367,7 +367,8 @@ class IMAGE_HT_header(Header):
         if not show_render:
             layout.prop(sima, "use_image_pin", text="")
 
-        layout.prop(sima, "colormanaged_view", text="")
+        #need to deactivate when image is not float. Not doable in python
+        #layout.prop(sima, "colormanaged_view", text="")
 
         # uv editing
         if show_uvedit:

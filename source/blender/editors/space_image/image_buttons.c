@@ -174,7 +174,7 @@ struct ImageUser *ntree_get_active_iuser(bNodeTree *ntree)
 
 /* is used for both read and write... */
 
-/*static int image_panel_poll(const bContext *C, PanelType *UNUSED(pt))
+static int image_panel_poll_float(const bContext *C, PanelType *UNUSED(pt))
 {
 	SpaceImage *sima= CTX_wm_space_image(C);
 	ImBuf *ibuf;
@@ -186,8 +186,18 @@ struct ImageUser *ntree_get_active_iuser(bNodeTree *ntree)
 	ED_space_image_release_buffer(sima, lock);
 	
 	return result;
-}*/
+}
 
+void image_panel_display_properties(const bContext *C, Panel *pa)
+{
+	bScreen *sc= CTX_wm_screen(C);
+	SpaceImage *sima= CTX_wm_space_image(C);
+	PointerRNA simaptr;
+	
+	RNA_pointer_create(&sc->id, &RNA_SpaceImageEditor, sima, &simaptr);
+	uiItemR(pa->layout, &simaptr, "colormanaged_view", 0, "", ICON_NONE);
+	
+}
 
 #if 0
 /* 0: disable preview 
@@ -813,6 +823,13 @@ void image_buttons_register(ARegionType *art)
 {
 	PanelType *pt;
 
+	pt= MEM_callocN(sizeof(PanelType), "spacetype image panel display properties");
+	strcpy(pt->idname, "IMAGE_PT_display_properties");
+	strcpy(pt->label, "Display Properties");
+	pt->poll= image_panel_poll_float;
+	pt->draw= image_panel_display_properties;
+	BLI_addtail(&art->paneltypes, pt);
+	
 	pt= MEM_callocN(sizeof(PanelType), "spacetype image panel gpencil");
 	strcpy(pt->idname, "IMAGE_PT_gpencil");
 	strcpy(pt->label, "Grease Pencil");

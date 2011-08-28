@@ -210,7 +210,7 @@ void cmCheckConfigUse()
 				for (sl= sa->spacedata.first; sl; sl= sl->next) {
 					if(sl->spacetype==SPACE_IMAGE) {
 						SpaceImage* sima = (SpaceImage*)sl;
-						
+						ColorManagedView* view;
 						ColorManagedDisplay* display = BCM_get_display(sima->colormanaged_display);
 						if(!display)
 						{
@@ -218,8 +218,8 @@ void cmCheckConfigUse()
 							printf("Blender color management: Window display \"%s\" not found, setting default \"%s\".\n", sima->colormanaged_display, display->display_name);
 							BLI_strncpy(sima->colormanaged_display, display->display_name, COLORMAN_MAX_DISPLAY);
 						}
-						;
-						ColorManagedView* view = BCM_get_view(display, sima->colormanaged_view);
+						
+						view = BCM_get_view(display, sima->colormanaged_view);
 						if(!view)
 						{
 							view = BCM_get_default_view(display);

@@ -302,7 +302,7 @@ typedef struct SolidLight {
 
 typedef struct ColorManagementOptions
 {
-	int flag;
+	int flag, pad;
 	char default_8bits[32];
 	char default_16bits[32];
 	char default_log[32];

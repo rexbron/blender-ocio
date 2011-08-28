@@ -2147,9 +2147,7 @@ static void write_screens(WriteData *wd, ListBase *scrbase)
 							writestruct(wd, DATA, "TreeStoreElem", so->treestore->usedelem, so->treestore->data);
 					}
 				}
-				else if(sl->spacetype==SPACE_IMAGE) {
-					SpaceImage *sima= (SpaceImage *)sl;
-					
+				else if(sl->spacetype==SPACE_IMAGE) {					
 					writestruct(wd, DATA, "SpaceImage", 1, sl);
 				}
 				else if(sl->spacetype==SPACE_IMASEL) {

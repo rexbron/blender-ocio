@@ -777,11 +777,7 @@ int imb_savetiff(ImBuf *ibuf, const char *name, int flags)
 				/* convert from float source */
 				float rgb[3];
 				
-/* OCIO TODO do this where colormanagement is available */
-//				if (ibuf->profile == IB_PROFILE_LINEAR_RGB)
-//					linearrgb_to_srgb_v3_v3(rgb, &fromf[from_i]);
-//				else
-					copy_v3_v3(rgb, &fromf[from_i]);
+				copy_v3_v3(rgb, &fromf[from_i]);
 
 				to16[to_i+0] = FTOUSHORT(rgb[0]);
 				to16[to_i+1] = FTOUSHORT(rgb[1]);

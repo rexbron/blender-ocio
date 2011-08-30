@@ -118,8 +118,7 @@ static struct ImBuf *imb_load_dpx_cineon(unsigned char *mem, int use_cineon, int
 	logImageClose(image);
 	
 	if (flags & IB_rect) {
-/* OCIO TODO: Log images*/
-//		IMB_rect_from_float(ibuf);
+		IMB_rect_from_float_simple(ibuf);
 	}
 	return ibuf;
 }

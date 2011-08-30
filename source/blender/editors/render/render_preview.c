@@ -500,7 +500,6 @@ void ED_preview_draw(const bContext *C, void *idp, void *parentp, void *slotp, r
 	if(idp) {
 		wmWindow *win = CTX_wm_window(C);
 		ScrArea *sa= CTX_wm_area(C);
-		Scene *sce = CTX_data_scene(C);
 		ID *id = (ID *)idp;
 		ID *parent= (ID *)parentp;
 		MTex *slot= (MTex *)slotp;

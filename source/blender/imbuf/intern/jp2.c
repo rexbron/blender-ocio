@@ -276,8 +276,7 @@ struct ImBuf *imb_jp2_decode(unsigned char *mem, size_t size, int flags)
 	opj_image_destroy(image);
 	
 	if (flags & IB_rect) {
-/* OCIO TODO: do this after load in BKE image.c where colormanagement is available */
-//		IMB_rect_from_float(ibuf);
+		IMB_rect_from_float_simple(ibuf);
 	}
 	
 	return(ibuf);

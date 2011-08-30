@@ -340,7 +340,7 @@ void IMB_interlace(struct ImBuf *ibuf);
 
 /* no profile conversion */
 void IMB_float_from_rect_simple(struct ImBuf *ibuf);
-/* OCIO TODO Temporary do not use! */
+/* carefull storing linear (not gamma corrected) on 8bit is verry bad */
 void IMB_rect_from_float_simple(struct ImBuf *ibuf);
 
 /* note, check that the conversion exists, only some are supported */

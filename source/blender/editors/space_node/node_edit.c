@@ -1161,7 +1161,6 @@ typedef struct ImageSampleInfo {
 	void *draw_handle;
 	int x, y;
 	int channels;
-	int color_manage; /* Deprecated OCIO TODO */
 
 	char col[4];
 	float colf[4];
@@ -1173,8 +1172,7 @@ static void sample_draw(const bContext *C, ARegion *ar, void *arg_info)
 {
 	ImageSampleInfo *info= arg_info;
 
-	draw_nodespace_color_info(ar, (CTX_data_scene(C)->r.color_mgt_flag & R_COLOR_MANAGEMENT), info->channels,
-							  info->x, info->y, info->col, info->colf);
+	draw_nodespace_color_info(ar, info->channels, info->x, info->y, info->col, info->colf);
 }
 
 static void sample_apply(bContext *C, wmOperator *op, wmEvent *event)

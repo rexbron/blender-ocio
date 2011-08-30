@@ -498,6 +498,7 @@ static int ed_preview_draw_rect(ScrArea *sa, wmWindow *win, ID *id, int split, i
 void ED_preview_draw(const bContext *C, void *idp, void *parentp, void *slotp, rcti *rect)
 {
 	if(idp) {
+		wmWindow *win = CTX_wm_window(C);
 		ScrArea *sa= CTX_wm_area(C);
 		Scene *sce = CTX_data_scene(C);
 		ID *id = (ID *)idp;
@@ -514,11 +515,11 @@ void ED_preview_draw(const bContext *C, void *idp, void *parentp, void *slotp, r
 		newrect.ymax= rect->ymin;
 
 		if(parent) {
-			ok = ed_preview_draw_rect(sa, sce, id, 1, 1, rect, &newrect);
-			ok &= ed_preview_draw_rect(sa, sce, parent, 1, 0, rect, &newrect);
+			ok = ed_preview_draw_rect(sa, win, id, 1, 1, rect, &newrect);
+			ok &= ed_preview_draw_rect(sa, win, parent, 1, 0, rect, &newrect);
 		}
 		else
-			ok = ed_preview_draw_rect(sa, sce, id, 0, 0, rect, &newrect);
+			ok = ed_preview_draw_rect(sa, win, id, 0, 0, rect, &newrect);
 
 		if(ok)
 			*rect= newrect;

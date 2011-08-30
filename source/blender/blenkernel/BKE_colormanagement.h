@@ -26,6 +26,11 @@ ColorSpace* BCM_get_texture_paint_colorspace(void);
 ColorSpace* BCM_get_sequencer_colorspace(void);
 ColorSpace* BCM_get_ui_colorspace(struct wmWindow* window);
 
+void BCM_apply_ui_processor_rgb(struct wmWindow* window, float* rgb);
+void BCM_apply_ui_processor_rgba(struct wmWindow* window, float* rgba);
+
+void BCM_tag_display_cache_update(struct wmWindow *window);
+
 ColorManagedDisplay* BCM_get_display(const char* name);
 ColorManagedDisplay* BCM_get_display_from_index(int index);
 ColorManagedDisplay* BCM_get_default_display(void);

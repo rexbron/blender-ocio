@@ -1488,7 +1488,7 @@ void draw_nodespace_back_pix(struct wmWindow *window, ARegion *ar, SpaceNode *sn
 	}
 }
 
-void draw_nodespace_color_info(ARegion *ar, int channels, int x, int y, char *cp, float *fp)
+void draw_nodespace_color_info(wmWindow *win, ARegion *ar, int channels, int x, int y, char *cp, float *fp)
 {
 	char str[256];
 	float dx= 6;
@@ -1622,9 +1622,8 @@ void draw_nodespace_color_info(ARegion *ar, int channels, int x, int y, char *cp
 	}
 	
 	/* colormanagement */
-	/* OCIO TODO: UI per pixel operation*/
-	linearrgb_to_srgb_v3_v3(finalcol, col);
-	finalcol[3] = col[3];
+	copy_v4_v4(finalcol, col);
+	BCM_apply_ui_processor_rgba(win, finalcol);
 	
 	glDisable(GL_BLEND);
 	glColor3fv(finalcol);

@@ -1171,8 +1171,9 @@ typedef struct ImageSampleInfo {
 static void sample_draw(const bContext *C, ARegion *ar, void *arg_info)
 {
 	ImageSampleInfo *info= arg_info;
+	wmWindow *win = CTX_wm_window(C);
 
-	draw_nodespace_color_info(ar, info->channels, info->x, info->y, info->col, info->colf);
+	draw_nodespace_color_info(win, ar, info->channels, info->x, info->y, info->col, info->colf);
 }
 
 static void sample_apply(bContext *C, wmOperator *op, wmEvent *event)

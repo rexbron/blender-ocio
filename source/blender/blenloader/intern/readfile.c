@@ -4717,6 +4717,8 @@ static void direct_link_windowmanager(FileData *fd, wmWindowManager *wm)
 		win->drawdata= NULL;
 		win->drawmethod= -1;
 		win->drawfail= 0;
+		
+		win->colormanaged_window_cache=NULL;
 	}
 	
 	wm->timers.first= wm->timers.last= NULL;

@@ -28,10 +28,13 @@
 
 #include "RNA_define.h"
 
-//#include "UI_resources.h"
-
-//#ifdef WITH_OCIO
 #include "ocio-capi.h"
+
+struct DisplayCache
+{
+	ConstProcessorRcPtr* processor;
+	int ok;
+};
 
 void cmLoadConfig(ConstConfigRcPtr* config)
 {
@@ -393,6 +396,59 @@ ColorSpace* BCM_get_ui_colorspace(struct wmWindow *window)
 		return BCM_get_color_picking_colorspace();
 }
 
+static struct DisplayCache* get_display_cache(wmWindow *window)
+{
+	struct DisplayCache *cache;
+	
+	if(!window->colormanaged_window_cache)
+	{
+		window->colormanaged_window_cache = MEM_mallocN(sizeof(struct DisplayCache), "wmWindow colormanaged_display_cache");
+		cache = (struct DisplayCache *) window->colormanaged_window_cache;
+		cache->processor = 0;
+		cache->ok = 0;
+	}
+	
+	cache = (struct DisplayCache *)window->colormanaged_window_cache;
+	
+	if(!cache->ok)
+	{
+		ConstConfigRcPtr* config = OCIO_getCurrentConfig();
+		ColorSpace *cs1 = BCM_get_scene_linear_colorspace();
+		ColorSpace *cs2 = BCM_get_ui_colorspace(window);
+		
+		if(cache->processor){
+			OCIO_processorRelease(cache->processor);
+			cache->processor = 0;
+		}
+		
+		cache->processor = OCIO_configGetProcessorWithNames(config, cs1->name, cs2->name);
+		OCIO_configRelease(config);
+		cache->ok = 1;
+	}
+	return cache;
+}
+
+void BCM_tag_display_cache_update(wmWindow *window)
+{
+	if(window->colormanaged_window_cache)
+	{
+		struct DisplayCache *cache = (struct DisplayCache *)window->colormanaged_window_cache;
+		cache->ok = 0;
+	}
+}
+
+void BCM_apply_ui_processor_rgb(wmWindow *window, float *rgb)
+{
+	struct DisplayCache *cache = get_display_cache(window);
+	OCIO_processorApplyRGB(cache->processor, rgb);
+}
+
+void BCM_apply_ui_processor_rgba(wmWindow *window, float *rgba)
+{
+	struct DisplayCache *cache = get_display_cache(window);
+	OCIO_processorApplyRGB(cache->processor, rgba);
+}
+
 ColorManagedDisplay* BCM_get_display(const char* name)
 {
 	if( strcmp(name, "") == 0)
@@ -552,7 +608,7 @@ void BCM_apply_display_transform(struct ImBuf *ibuf, const char* display, const 
 		OCIO_displayTransformSetDisplay(dt, display);
 		OCIO_displayTransformSetView(dt, view);
 		
-		processor = OCIO_configGetProcessor(config, dt);
+		processor = OCIO_configGetProcessor(config, (ConstTransformRcPtr*)dt);
 		if(processor)
 		{
 			OCIO_processorApply(processor, img);
@@ -917,5 +973,4 @@ void BCM_add_views_items_from_display_name(EnumPropertyItem** items, int* totite
 	BCM_add_views_items(items, totitem, display);
 }
 
-//#endif //WITH_OCIO
 

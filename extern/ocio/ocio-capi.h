@@ -9,19 +9,21 @@ using namespace OCIO_NAMESPACE;
 extern "C" { 
 #endif
 
+#define OCIO_DECLARE_HANDLE(name) typedef struct name##__ { int unused; } *name
+
 
 #ifndef OCIO_CAPI_IMPLEMENTATION
 	#define OCIO_ROLE_SCENE_LINEAR	"scene_linear"
 	#define OCIO_ROLE_COLOR_PICKING	"color_picking"
 	#define OCIO_ROLE_TEXTURE_PAINT	"texture_paint"
 	
-	typedef void ConstConfigRcPtr;
-	typedef void ConstColorSpaceRcPtr;
-	typedef void ConstProcessorRcPtr;
-	typedef void ConstContextRcPtr;
-	typedef void PackedImageDesc;
-	typedef void DisplayTransformRcPtr;
-	typedef void ConstTransformRcPtr;
+	OCIO_DECLARE_HANDLE(ConstConfigRcPtr);
+	OCIO_DECLARE_HANDLE(ConstColorSpaceRcPtr);
+	OCIO_DECLARE_HANDLE(ConstProcessorRcPtr);
+	OCIO_DECLARE_HANDLE(ConstContextRcPtr);
+	OCIO_DECLARE_HANDLE(PackedImageDesc);
+	OCIO_DECLARE_HANDLE(DisplayTransformRcPtr);
+	OCIO_DECLARE_HANDLE(ConstTransformRcPtr);
 #endif
 
 

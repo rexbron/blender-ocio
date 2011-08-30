@@ -514,7 +514,10 @@ static void rna_Window_display_setf(struct PointerRNA *ptr, int value)
 	wmWindow *w= (wmWindow*)ptr->data;
 	ColorManagedDisplay* cd = BCM_get_display_from_index(value);
 	if(cd)
+	{
 		BLI_strncpy(w->colormanaged_display, cd->display_name, 32);
+		BCM_tag_display_cache_update(w);
+	}
 }
 
 static EnumPropertyItem* rna_Window_display_itemf(bContext *C, PointerRNA *ptr, PropertyRNA *UNUSED(prop), int *free)

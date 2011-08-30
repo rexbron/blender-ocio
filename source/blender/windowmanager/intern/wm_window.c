@@ -183,6 +183,9 @@ void wm_window_free(bContext *C, wmWindowManager *wm, wmWindow *win)
 	
 	wm_ghostwindow_destroy(win);
 	
+	if(win->colormanaged_window_cache)
+		MEM_freeN(win->colormanaged_window_cache);
+	
 	MEM_freeN(win);
 }
 
@@ -233,6 +236,7 @@ wmWindow *wm_window_copy(bContext *C, wmWindow *winorig)
 	win->drawdata= NULL;
 	
 	BLI_strncpy(win->colormanaged_display, winorig->colormanaged_display, 32);
+	win->colormanaged_window_cache = NULL;
 	
 	return win;
 }

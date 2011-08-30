@@ -198,6 +198,7 @@ typedef struct wmWindow {
 	ListBase gesture;		/* gesture stuff */
 	
 	char colormanaged_display[32];
+	void *colormanaged_window_cache; /* colormanagement.c */
 } wmWindow;
 
 /* should be somthing like DNA_EXCLUDE 

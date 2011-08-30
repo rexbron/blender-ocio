@@ -385,6 +385,18 @@ static EnumPropertyItem* rna_userdef_colorspace_itemf(bContext *C, PointerRNA *p
 	return items;
 }
 
+static void rna_userdef_colorspace_ui_update(Main *bmain, Scene *scene, PointerRNA *ptr)
+{
+	wmWindowManager* wm = G.main->wm.first;
+	wmWindow* w = wm->windows.first;
+	
+	while(w)
+	{
+		BCM_tag_display_cache_update(w);
+		w = w->next;
+	}
+}
+
 #else
 
 static void rna_def_userdef_theme_ui_font_style(BlenderRNA *brna)
@@ -3086,6 +3098,7 @@ void rna_def_userdef_color_management(BlenderRNA *brna)
 	prop= RNA_def_property(srna, "use_display_default_view_for_ui", PROP_BOOLEAN, PROP_NONE);
 	RNA_def_property_boolean_sdna(prop, NULL, "flag", COLORMAN_UI_USE_WINDOW_CS);
 	RNA_def_property_ui_text(prop, "Use display's default view for UI", "UI element use the default view colorspace of the display assigned to the current window. Otherwise use the \"color_picking\" role.");
+	RNA_def_property_update(prop, 0, "rna_userdef_colorspace_ui_update");
 }
 
 void RNA_def_userdef(BlenderRNA *brna)

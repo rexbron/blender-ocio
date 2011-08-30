@@ -101,9 +101,6 @@ static int eyedropper_cancel(bContext *C, wmOperator *op)
 static void eyedropper_sample(bContext *C, Eyedropper *eye, int mx, int my)
 {
 	if(RNA_property_type(eye->prop) == PROP_FLOAT) {
-		/* OCIO TODO: UI per pixel op */
-		/* is this 3D view only or general */
-		const int color_manage = CTX_data_scene(C)->r.color_mgt_flag & R_COLOR_MANAGEMENT;
 		float col[4];
 	
 		RNA_property_float_get_array(&eye->ptr, eye->prop, col);
@@ -115,8 +112,10 @@ static void eyedropper_sample(bContext *C, Eyedropper *eye, int mx, int my)
 		if (RNA_property_array_length(&eye->ptr, eye->prop) < 3) return;
 
 		/* convert from screen (srgb) space to linear rgb space */
-		if (color_manage && RNA_property_subtype(eye->prop) == PROP_COLOR)
-			srgb_to_linearrgb_v3_v3(col, col);
+		if (RNA_property_subtype(eye->prop) == PROP_COLOR) {
+			wmWindow *win = CTX_wm_window(C);
+			BCM_apply_ui_processor_rgb(win, col);
+		}
 		
 		RNA_property_float_set_array(&eye->ptr, eye->prop, col);
 		

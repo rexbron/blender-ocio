@@ -622,7 +622,7 @@ static CompBuf *generate_procedural_preview(CompBuf *cbuf, int newx, int newy)
 
 void generate_preview(void *data, bNode *node, CompBuf *stackbuf)
 {
-	RenderData *rd= data;
+	/*RenderData *rd= data;*/
 	bNodePreview *preview= node->preview;
 	int xsize, ysize;
 	unsigned char *rect;
@@ -630,8 +630,10 @@ void generate_preview(void *data, bNode *node, CompBuf *stackbuf)
 	if(preview && stackbuf) {
 		CompBuf *cbuf, *stackbuf_use;
 		ColorSpace* compositor_cs = BCM_get_scene_linear_colorspace();
+		/* OCIO TODO: UI that maybe common to more than one window */
+		/*ColorSpace* preview_cs = BCM_get_ui_colorspace();*/
 		ColorSpace* preview_cs = BCM_get_color_picking_colorspace();
-		
+				
 		if(stackbuf->rect==NULL && stackbuf->rect_procedural==NULL) return;
 		
 		stackbuf_use= typecheck_compbuf(stackbuf, CB_RGBA);
@@ -652,9 +654,6 @@ void generate_preview(void *data, bNode *node, CompBuf *stackbuf)
 
 		/* convert to byte for preview */
 		rect= MEM_callocN(sizeof(unsigned char)*4*xsize*ysize, "bNodePreview.rect");
-
-/* OCIO TODO use wmWindow colormanaged display default view */
-//		floatbuf_to_srgb_byte(cbuf->rect, rect, 0, xsize, 0, ysize, xsize);
 		BCM_apply_transform_to_byte(cbuf->rect, rect, xsize, ysize, compositor_cs->name, preview_cs->name);
 
 		

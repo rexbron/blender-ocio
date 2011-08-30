@@ -118,7 +118,7 @@ static struct ImBuf *imb_load_dpx_cineon(unsigned char *mem, int use_cineon, int
 	logImageClose(image);
 	
 	if (flags & IB_rect) {
-/* OCIO TODO*/
+/* OCIO TODO: Log images*/
 //		IMB_rect_from_float(ibuf);
 	}
 	return ibuf;
@@ -146,7 +146,7 @@ static int imb_save_dpx_cineon(ImBuf *ibuf, const char *filename, int use_cineon
 	 * Get the drawable for the current image...
 	 */
 
-/* OCIO TODO */
+/* OCIO TODO: Log images */
 //	fbuf= IMB_float_profile_ensure(ibuf, conversion.doLogarithm ? IB_PROFILE_LINEAR_RGB : IB_PROFILE_NONE, &is_alloc);
 	IMB_float_from_rect_simple(ibuf);
 	fbuf = ibuf->rect_float;

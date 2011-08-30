@@ -279,14 +279,6 @@ void BCM_init()
 
 void BCM_exit(void)
 {
-	EnumPropertyItem* items;
-	
-	items = cmGetDisplays();
-	MEM_freeN(items);
-	
-	items = cmGetViews(0);
-	MEM_freeN(items);
-	
 	cmFreeConfig();
 }
 
@@ -878,47 +870,27 @@ void BCM_add_colorspaces_items(EnumPropertyItem** items, int* totitem, int add_d
 	}
 }
 
-EnumPropertyItem* cmGetDisplays(void)
+void BCM_add_displays_items(EnumPropertyItem** items, int* totitem)
 {
-	static EnumPropertyItem *items = 0;
-	
-	if(items == 0)
+	ColorManagedDisplay* cd = G.color_managed_displays.first;
+	while(cd)
 	{
-		int totitem = 0;
-		ColorManagedDisplay* cd = G.color_managed_displays.first;
-		while(cd)
-		{
-			EnumPropertyItem item;
-			
-			item.value = cd->index;
-			item.name = cd->display_name;
-			item.identifier = cd->display_name;
-			item.icon = 0;
-			item.description = "";
-			
-			RNA_enum_item_add(&items, &totitem, &item);
-			
-			cd = cd->next;
-		}
+		EnumPropertyItem item;
 		
-		RNA_enum_item_end(&items, &totitem);
+		item.value = cd->index;
+		item.name = cd->display_name;
+		item.identifier = cd->display_name;
+		item.icon = 0;
+		item.description = "";
+		
+		RNA_enum_item_add(items, totitem, &item);
+		
+		cd = cd->next;
 	}
-	
-	return items;
 }
 
-EnumPropertyItem* cmGetViews(ColorManagedDisplay* display)
+void BCM_add_views_items(EnumPropertyItem** items, int* totitem, ColorManagedDisplay* display)
 {
-	static EnumPropertyItem *items = 0;
-	static int totitem = 0;
-	
-	if(items)
-	{
-		MEM_freeN(items);
-		items = 0;
-		totitem = 0;
-	}
-	
 	if(display)
 	{
 		ColorManagedView* cv = display->views.first;
@@ -932,21 +904,17 @@ EnumPropertyItem* cmGetViews(ColorManagedDisplay* display)
 			item.icon = 0;
 			item.description = "";
 			
-			RNA_enum_item_add(&items, &totitem, &item);
+			RNA_enum_item_add(items, totitem, &item);
 			
 			cv = cv->next;
 		}
 	}
-	
-	RNA_enum_item_end(&items, &totitem);
-	
-	return items;
 }
 
-EnumPropertyItem* cmGetViewsFromDisplayName(const char* name)
+void BCM_add_views_items_from_display_name(EnumPropertyItem** items, int* totitem, const char* name)
 {
 	ColorManagedDisplay* display = BCM_get_display(name);
-	return cmGetViews(display);
+	BCM_add_views_items(items, totitem, display);
 }
 
 //#endif //WITH_OCIO

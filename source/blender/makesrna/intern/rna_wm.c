@@ -519,7 +519,12 @@ static void rna_Window_display_setf(struct PointerRNA *ptr, int value)
 
 static EnumPropertyItem* rna_Window_display_itemf(bContext *C, PointerRNA *ptr, PropertyRNA *UNUSED(prop), int *free)
 {
-	return cmGetDisplays();
+	EnumPropertyItem *items = NULL;
+	int totitem = 0;
+	
+	BCM_add_displays_items(&items, &totitem);
+	RNA_enum_item_end(&items, &totitem);
+	return items;
 }
 
 static PointerRNA rna_KeyMapItem_properties_get(PointerRNA *ptr)

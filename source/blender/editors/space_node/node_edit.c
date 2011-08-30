@@ -1179,6 +1179,7 @@ static void sample_draw(const bContext *C, ARegion *ar, void *arg_info)
 
 static void sample_apply(bContext *C, wmOperator *op, wmEvent *event)
 {
+	wmWindow *window= CTX_wm_window(C);
 	SpaceNode *snode= CTX_wm_space_node(C);
 	ARegion *ar= CTX_wm_region(C);
 	ImageSampleInfo *info= op->customdata;
@@ -1192,12 +1193,11 @@ static void sample_apply(bContext *C, wmOperator *op, wmEvent *event)
 	if(!ibuf)
 		return;
 	
-	/* OCIO TODO*/
+	/* Colormanagement: not needed backdrop drawing should already have made a 
+	display corrected char image (for drawing it) */
 	if(!ibuf->rect) {
-		if(info->color_manage)
-			ibuf->profile = IB_PROFILE_LINEAR_RGB;
-		else
-			ibuf->profile = IB_PROFILE_NONE;
+		ColorSpace *cs = BCM_get_ui_colorspace(window);
+		ibuf->profile = cs->index;
 		IMB_rect_from_float(ibuf);
 	}
 

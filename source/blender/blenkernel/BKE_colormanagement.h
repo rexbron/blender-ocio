@@ -56,9 +56,8 @@ void IMB_partial_rect_from_float(struct ImBuf *ibuf, float *buffer, int x, int y
 
 /* RNA helpers */
 void BCM_add_colorspaces_items(struct EnumPropertyItem** items, int* totitem, int add_default, struct ImBuf *ibuf);
-/* OCIO TODO */
-struct EnumPropertyItem* cmGetDisplays(void);
-struct EnumPropertyItem* cmGetViews(ColorManagedDisplay* display);
-struct EnumPropertyItem* cmGetViewsFromDisplayName(const char* display);
+void BCM_add_displays_items(struct EnumPropertyItem** items, int* totitem);
+void BCM_add_views_items(struct EnumPropertyItem** items, int* totitem, ColorManagedDisplay* display);
+void BCM_add_views_items_from_display_name(struct EnumPropertyItem** items, int *totitem, const char* display);
 
 #endif // BKE_COLORMANAGEMENT_H

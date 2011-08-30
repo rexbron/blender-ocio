@@ -464,7 +464,14 @@ static EnumPropertyItem* rna_SpaceImageEditor_cmview_itemf(bContext *C, PointerR
 {
 	wmWindow *w = CTX_wm_window(C);
 	ColorManagedDisplay* cd = BCM_get_display(w->colormanaged_display);
-	return cmGetViews(cd);
+	EnumPropertyItem *items = NULL;
+	int totitem = 0;
+	
+	BCM_add_views_items(&items, &totitem, cd);
+	RNA_enum_item_end(&items, &totitem);
+	
+	*free = 1;
+	return items;
 }
 
 static void rna_SpaceImageEditor_cmview_update(Main *UNUSED(bmain), Scene *UNUSED(scene), PointerRNA *ptr)

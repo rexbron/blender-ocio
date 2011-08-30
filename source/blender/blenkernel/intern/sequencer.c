@@ -2090,7 +2090,7 @@ static ImBuf * seq_render_strip(SeqRenderData context, Sequence * seq, float cfr
 				if (ibuf->rect_float && ibuf->rect)
 					imb_freerectImBuf(ibuf);
 
-/* OCIO TODO: set the profile after loading ibuf */
+/* OCIO TODO: sequencer */
 				/* all sequencer color is done in SRGB space, linear gives odd crossfades */
 //				if(ibuf->profile == IB_PROFILE_LINEAR_RGB)
 					IMB_convert_profile(ibuf, seq_cs);

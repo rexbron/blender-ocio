@@ -456,8 +456,7 @@ static int ed_preview_draw_rect(ScrArea *sa, wmWindow *win, ID *id, int split, i
 	if (id && GS(id->name) != ID_TE) {
 		/* exception: don't color manage texture previews - show the raw values */
 		if (win){
-			/* OCIO TODO use default view od display (from wmWindow)*/
-			ColorSpace* cs = BCM_get_color_picking_colorspace();
+			ColorSpace* cs = BCM_get_ui_colorspace(win);
 			gamma_correct_profile = cs->name;
 		}
 	}

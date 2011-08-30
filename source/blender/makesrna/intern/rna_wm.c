@@ -524,6 +524,7 @@ static EnumPropertyItem* rna_Window_display_itemf(bContext *C, PointerRNA *ptr, 
 	
 	BCM_add_displays_items(&items, &totitem);
 	RNA_enum_item_end(&items, &totitem);
+	*free=1;
 	return items;
 }
 
